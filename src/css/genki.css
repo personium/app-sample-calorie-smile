@@ -1,0 +1,329 @@
+td {
+    padding-bottom: 5px;
+    text-align:right;
+}
+
+html,body {
+    height: 100%;
+}
+
+/* 見出し */
+/* h1 ページタイトルのみ */
+header > h1 {
+  flex: 1 1 auto;
+  margin: 0;
+  font-size: 24px;
+  font-weight: normal;
+  text-align: left;
+}
+h1 {
+  flex: 1 1 auto;
+  margin: 0;
+  font-size: 24px;
+  font-weight: normal;
+  text-align: center;
+  padding: 32px 0 14px;
+  background-color: #f39700;
+  color: #ffffff;
+}
+/* h2 通常項目見出し */
+h2 {
+  margin: 20px 0;
+  font-size: 20px;
+  color: #8a92a8;
+}
+
+h3 {
+  margin: 10px 0;
+  font-size: 16px;
+  color: #8a92a8;
+}
+
+/* セクション */
+section {
+  clear: both;
+  border-top: 1px solid #d4d4d4;
+  border-bottom: 1px solid #d4d4d4;
+}
+section + section {
+  border-top: 0 none;
+}
+section .sizeCaption {
+  margin: 0 16px;
+}
+
+/* リスト */
+ul,
+li {
+  list-style: none;
+  padding: 0;
+  margin: 0;
+}
+
+/* ヘッダー */
+header {
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+  width: 100%;
+  padding: 32px 0 14px;
+  background-color: #f39700;
+  color: #ffffff;
+  font-size: 16px;
+}
+header > * {
+  flex: 0 0 auto;
+  padding: 0 8px;
+}
+header > *:first-child {
+  padding-left: 16px;
+}
+header > *:last-child {
+  padding-right: 16px;
+}
+header > a {
+  align-self: stretch;
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+}
+
+#reloadIcon,
+#menuIcon {
+  width: 32px;
+  height: 32px;
+}
+
+/* カロリースマイル用 */
+.meal-section {
+  padding: 0 16px;
+  border-top: 1px solid #d4d4d4;
+  border-bottom: 1px solid #d4d4d4;
+}
+.meal-section + .meal-section {
+  border-top: 12px solid #ededed;
+}
+.meal-section + .meal-section::before {
+  content: "";
+  display: block;
+  height: 1px;
+  margin: 0 -16px;
+  background-color: #d4d4d4;
+}
+.daily-meal {
+  display: flex;
+  flex-direction: row;
+  flex-wrap: wrap;
+  margin-left: -8px;
+  margin-bottom: 8px;
+}
+.meal {
+  flex: 0 0 auto;
+  width: 104px;
+  margin-left: 8px;
+  margin-bottom: 8px;
+}
+.picture img {
+  width: 104px;
+}
+.time,
+.comment {
+  color: #a2a2a2;
+}
+.time::before {
+  content: "";
+  display: inline-block;
+  vertical-align: middle;
+  width: 16px;
+  height: 16px;
+  background-image: url("../image/parts_ico_time.png");
+  background-repeat: no-repeat;
+  background-position: center;
+  background-size: 16px;
+}
+
+
+.main_box {
+    height: 100%;
+    background-color: whitesmoke;
+}
+
+.service-logoback {
+    background-color: #f39700;
+    height: 25%;
+    line-height:25%; /* heightと同じ値 */
+    text-align:center;
+    vertical-align:middle;
+}
+
+.service-logo {
+    position: relative;
+    width: auto;
+    height: 80%;
+    top: 50%;
+    vertical-align:middle;
+    transform: translateY(-50%);
+}
+
+.info {
+    margin-top: 40px;
+    margin-bottom: 30px;
+}
+
+.form-control{
+    width: 80%;
+    height: 50px;
+    border-radius: 40px;
+    color: #333333 !important;
+    font-size: 16px;
+    padding-left: 16px;
+    padding-right: 16px;
+    margin-top: 10px;
+    outline: none;
+    /*-webkit-box-shadow: none !important;
+    -moz-box-shadow: none !important;
+    box-shadow: none !important;*/
+}
+
+.login_btn{
+    background-color:#4d6ce9;
+    border: 1px solid rgba(255, 255, 255, 100);
+    border-radius: 40px;
+    margin: 40px;
+    padding: 5px;
+    width: 80%;
+    outline: none;
+    font-size: 16px;
+    font-weight: inherit;
+    color : #FFF;
+}
+
+.widthImg {
+    width:40%;
+}
+
+.widthComm {
+    width:40%;
+}
+
+.imgContain {
+    background-size: contain;
+    background-repeat: no-repeat;
+    background-position: center center;
+}
+
+.heightTd {
+    height:100px;
+}
+
+.glyphiconStyle {
+    font-size: 32px;
+    width: 32px;
+    height: 32px;
+    margin-top: 10px;
+    margin-left: 10px;
+    cursor : pointer;
+}
+
+.spinIcon {
+    pointer-events : none;
+    -webkit-animation: spin 1.5s linear infinite;
+    -moz-animation: spin 1.5s linear infinite;
+    -ms-animation: spin 1.5s linear infinite;
+    -o-animation: spin 1.5s linear infinite;
+    animation: spin 1.5s linear infinite;
+}
+
+@-webkit-keyframes spin {
+	0% {-webkit-transform: rotate(0deg);}
+	100% {-webkit-transform: rotate(360deg);}
+}
+@-moz-keyframes spin {
+	0% {-moz-transform: rotate(0deg);}
+	100% {-moz-transform: rotate(360deg);}
+}
+@-ms-keyframes spin {
+	0% {-ms-transform: rotate(0deg);}
+	100% {-ms-transform: rotate(360deg);}
+}
+@-o-keyframes spin {
+	0% {-o-transform: rotate(0deg);}
+	100% {-o-transform: rotate(360deg);}
+}
+@keyframes spin {
+	0% {transform: rotate(0deg);}
+	100% {transform: rotate(360deg);}
+}
+
+.overlay {
+    /*position: absolute;*/
+    position: fixed;
+    background: rgba(0,0,0,0);
+    width: 100%;
+    height: 100%;
+    top: 0px;
+    display: block;
+    visibility: visible;
+    z-index: -1;
+
+    -webkit-transition: all .5s ease;
+    transition: all .5s ease;
+}
+
+.overlay-on {
+    background: rgba(0,0,0,0.7);
+    z-index: 1;
+}
+
+.slide-menu {
+    /*position: absolute;*/
+    position: fixed;
+    background: #ffffff;
+    width:70%;
+    height: 100%;
+    left: 100%;
+    top: 0px;
+    z-index: 2;
+
+    -webkit-transition: all .5s ease;
+    transition: all .5s ease;
+}
+
+.slide-on {
+    -webkit-transform: translate3d(-100%, 0, 0);
+    transform: translate3d(-100%, 0, 0);
+}
+
+.menu-title {
+    width: 100%;
+}
+
+.sidemenu-item {
+    padding-top: 3%;
+    padding-bottom: 3%;
+    padding-right: 3%;
+    width: 95%;
+    height: 48px;
+    border-bottom: 1px solid #c7c7c7;
+    border-collapse: collapse;
+    color: #333333;
+    vertical-align: middle;
+}
+
+.allToggle {
+    display:block;
+    width:100%;
+    height:100%;
+}
+
+.photoTable {
+    width:500px;
+    margin-top:20px;
+    table-layout: fixed;
+}
+
+@media (max-width: 767px) {
+    .photoTable {
+        width: 100%;
+    }
+}

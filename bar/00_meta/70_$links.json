@@ -1,0 +1,14 @@
+{
+  "Links": [
+    {
+      "FromType": "Relation",
+      "FromName": {
+          "Name": "ShokujiViewer"
+      },
+      "ToType": "Role",
+      "ToName": {
+          "Name": "ShokujiView"
+      }
+    }
+  ]
+}

@@ -1,0 +1,71 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>カロリースマイル</title>
+    <link href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.1/css/bootstrap.min.css" rel="stylesheet">
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/1.11.1/jquery.min.js"></script>
+    <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.1/js/bootstrap.min.js"></script>
+    <script src="./js/login.js"></script>
+    <link href='https://fonts.googleapis.com/css?family=Raleway:400,200' rel='stylesheet' type='text/css'>
+    <link href='./css/login.css' rel='stylesheet' type='text/css'>
+</head>
+<body>
+  <section class="login-section">
+    <h1><img src="./image/top.png" alt="カロリースマイル"></h1>
+
+    <div>「カロリースマイル」とデータを連携します。</div>
+
+    <div class="login-form-controls">
+      <div>
+        <input id="iGenkikunId" type="text" placeholder="ID を入力して下さい。" value="">
+      </div>
+      <div>
+        <input id="iGenkikunPw" type="password" placeholder="PW を入力して下さい。" value="">
+      </div>
+      <div>
+        <button class="login_btn round-btn" id="register" onClick="cs.saveGenkiAccess();return false;">連携する</button>
+      </div>
+    </div>
+    <input id="iGenkikunUrl" type="hidden" value="https://pdsc.questcom.co.jp/"/>
+    <!-- /login-form-controls -->
+  </section>
+  <section class="login-section">
+    <div id="dispMsg" style="display:none;">
+    </div>
+  </section>
+<!--
+    <div class="main_box row">
+        <div class="col-md-12 col-xs-12 service-logoback" align="center">
+            <img class="service-logo" src="./image/top.png">
+        </div>
+        <div class="col-md-12 col-xs-12" align="center">
+            <div class="info">
+                <p class="text-muted">「カロリースマイル」<br>とデータを連携します</p>
+            </div>
+            <div>
+                <div class="control">
+                    <input id="iGenkikunId" type="text" class="form-control" placeholder="ID を入力して下さい。" value=""/>
+                </div>
+                <div class="control">
+                    <input id="iGenkikunPw" type="text" class="form-control" placeholder="PW を入力して下さい。" value=""/>
+                </div>
+                <div align="center">
+                     <button class="login_btn" id="register" onClick="cs.saveGenkiAccess();return false;">連携する</button>
+                </div>
+            </div>
+            <div align="right">
+                <span id="MigrationGenki" class="glyphicon glyphicon-repeat glyphiconStyle" onClick="cs.getGenkikunData();return false;" style="display:none;"></span>
+            </div>
+            <div id="dispMsg" style="display:none;">
+            </div>
+            <div class="main_area" id="dvMainArea" style="display:none;">
+                
+            </div>
+        </div>
+    </div>
+-->
+</body>
+</html>

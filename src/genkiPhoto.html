@@ -1,0 +1,168 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>カロリースマイル</title>
+    <link href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.1/css/bootstrap.min.css" rel="stylesheet">
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/1.11.1/jquery.min.js"></script>
+    <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.1/js/bootstrap.min.js"></script>
+    <link href='https://fonts.googleapis.com/css?family=Raleway:400,200' rel='stylesheet' type='text/css'>
+    <link href='./css/genki.css' rel='stylesheet' type='text/css'>
+<script type="text/javascript">
+    var accessData = JSON.parse(sessionStorage.getItem("accessInfo"));
+    $(document).ready(function() {
+        accessData.skip = 0;
+        accessData.top = 50;
+        dispPhoto();
+        $('#photoTitle').html(accessData.Title + 'の食事写真');
+    });
+
+    function dispPhoto() {
+        var skip = accessData.skip;
+        var top = accessData.top;
+        $('#dvMainArea').empty();
+        getPhotoAPI(skip, top).done(function(data) {
+            var dataList = data.d.results;
+            var html = "";
+            var nowDate = "";
+
+            for (var i in dataList) {
+                var imageSrc = dataList[i].photo;
+                var imageName = "";
+                if (imageSrc) {
+                    imageName = imageSrc.match(".+/(.+?)([\?#;].*)?$")[1];
+                }
+                var shokujiDate = dataList[i].shokuji_date;
+                var dateId = shokujiDate.replace(/\//g, "");
+                var shokujiTime = dataList[i].time;
+                var timeId = shokujiTime.replace(/:/g, "");
+                var dispTimeS = shokujiTime.split(':');
+                var dispTime = dispTimeS[0] + ":" + dispTimeS[1];
+                var noId = dataList[i].no;
+
+                var html = '';
+                if (nowDate !== shokujiDate) {
+                    nowDate = shokujiDate;
+                    //html = '<table border="1" class="photoTable" id="td' + dateId + '"><tr>';
+                    //html += '<td style="text-align:left" colspan="3">' + nowDate + '</td>';
+                    //html += '</tr><tr>';
+                    //html += '<td style="text-align:left;">写真</td>';
+                    //html += '<td style="text-align:left">日時</td>';
+                    //html += '<td style="text-align:left">コメント</td>';
+                    //html += '</tr></table>';
+                    html = '<section class="meal-section"><h2>' + nowDate.replace(/\//g, ".") + '</h2><div class="daily-meal" id="td' + dateId + '"></div></section>';
+
+                    $('#dvMainArea').append(html);
+                }
+
+                //html = '<tr>';
+                //html += '<td id="im' + dateId + timeId + noId + '" class="widthImg heightTd imgContain" style="text-align:center;"></td>';
+                //html += '<td class="widthImg" style="text-align:left">' + shokujiTime + '</td>';
+                //html += '<td class="widthComm" style="text-align:left">' + dataList[i].shokuji_comment + '</td>';
+                //html += '</tr>';
+                html = '<div class="meal">';
+                html += '<div class="picture">';
+                html += '<img id="im' + dateId + timeId + noId + '" alt="食べ物">';
+                html += '</div>';
+                html += '<div class="time">' + dispTime + '</div>';
+                html += '<div class="comment">' + dataList[i].shokuji_comment + '</div>';
+                html += '</div>';
+
+                $("#td" + dateId).append(html);
+                setPhoto(dateId, timeId, noId, imageName);
+            }
+
+            if (dataList.length > 0) {
+                $('#dvMainArea').css("display", "block");
+            } else {
+                $('#dispMsg').html('データがありません。');
+                $('#dispMsg').css("display", "block");
+            }
+        }).fail(function(data) {
+            $('#errorMsg').html('データがありません。');
+            $('#errorMsg').css("display", "block");
+        });
+    }
+
+    function setPhoto(dateId, timeId, noId, imageName) {
+        var ext = imageName.split('.')[1];
+        var contentType = "image/jpeg";
+        switch (ext) {
+            case "png":
+                contentType = "image/png";
+                break;
+            case "gif":
+                contentType = "image/gif";
+                break;
+        }
+        var filePath = accessData.photoCell + '/Images/' + imageName;
+        var oReq = new XMLHttpRequest();
+        oReq.open("GET", filePath);
+        oReq.responseType = "blob";
+        oReq.setRequestHeader("Content-Type", contentType);
+        oReq.setRequestHeader("Authorization", "Bearer " + accessData.photoToken);
+        oReq.onload = function(response) {
+            var blob = oReq.response;
+            var file = new File([blob], imageName);
+            try {
+                var reader = new FileReader();
+            } catch (e) {
+                return;
+            }
+
+            reader.onload = function(event) {
+                //$("#im" + dateId + timeId + noId).css('background-image','url(\'' + event.target.result + '\')');
+                $("#im" + dateId + timeId + noId).attr('src',event.target.result);
+            }
+            reader.readAsDataURL(file, "UTF-8");
+        }
+        oReq.send();
+    };
+
+    function getPhotoAPI(skip, top) {
+        var id = accessData.id;
+        return $.ajax({
+            type: 'GET',
+            url: accessData.photoCell + '/GenkiKunData/shokuji_info?$skip=' + skip + '&$top=' + top + '&$orderby=shokuji_date%20desc,time%20asc,no%20asc',
+            headers: {
+                'Authorization':'Bearer ' + accessData.photoToken,
+                'Accept':'application/json'
+            }
+        });
+    }
+</script>
+</head>
+<body>
+    <header>
+      <h1><span id="photoTitle"></span></h1>
+      <a id="MigrationGenki" href="#" onclick="dispPhoto();return false;">
+        <img id="reloadIcon" src="./image/parts_ico_reload.png" alt="user">
+      </a>
+    </header>
+    <div id="dispMsg" style="display:none;">
+    </div>
+    <span id="dvMainArea">
+        
+    </span>
+<!--
+    <div class="main_box">
+        <nav class="navbar navbar-default">
+            <div class="container">
+                <div class="navbar-header">
+                    <a class="navbar-brand" id="photoTitle"></a>
+                </div>
+            </div>
+        </nav>
+        <div class="col-md-12 col-xs-12" align="center">
+            <div class="main_area" id="dvMainArea" style="display:none;">
+                
+            </div>
+            <div id="errorMsg" style="display:none;">
+            </div>
+        </div>
+    </div>
+-->
+</body>
+</html>
