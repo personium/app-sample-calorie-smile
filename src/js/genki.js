@@ -896,7 +896,7 @@ cs.setIdleTime = function() {
 cs.refreshToken = function() {
     return $.ajax({
         type: "POST",
-        url: cs.accessData.cellUrl + '__auth',
+        url: cs.accessData.cellUrl + '__token',
         processData: true,
         dataType: 'json',
         data: {
@@ -930,7 +930,7 @@ cs.getProfile = function(url) {
 cs.getTargetToken = function(extCellUrl) {
   return $.ajax({
                 type: "POST",
-                url: cs.accessData.cellUrl + '__auth',
+                url: cs.accessData.cellUrl + '__token',
                 processData: true,
 		dataType: 'json',
                 data: {
@@ -1017,7 +1017,7 @@ cs.getDataAPI = function(prevDate) {
 cs.getAppToken = function() {
   return $.ajax({
                 type: "POST",
-                url: 'https://demo.personium.io/hn-app-genki/__auth',
+                url: 'https://demo.personium.io/hn-app-genki/__token',
                 processData: true,
 		dataType: 'json',
                 data: {
@@ -1033,7 +1033,7 @@ cs.getAppToken = function() {
 cs.getMsgToken = function(appToken) {
   return $.ajax({
                 type: "POST",
-                url: cs.accessData.cellUrl + '__auth',
+                url: cs.accessData.cellUrl + '__token',
                 processData: true,
 		dataType: 'json',
                 data: {

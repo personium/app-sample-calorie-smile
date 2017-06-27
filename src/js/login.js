@@ -249,7 +249,7 @@ cs.setIdleTime = function() {
 cs.refreshToken = function() {
     return $.ajax({
         type: "POST",
-        url: cs.accessData.cellUrl + '__auth',
+        url: cs.accessData.cellUrl + '__token',
         processData: true,
         dataType: 'json',
         data: {
