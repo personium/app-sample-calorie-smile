@@ -118,18 +118,6 @@ cs.receiveMessage = function() {
     $('#modal-receiveMessage').modal('show');
 };
 
-cs.scrollStop = function() {
-    var scroll_event = "onwheel" in document ? "wheel" : "onmousewheel" in document ? "mousewheel" : "DOMMouseScroll";
-    $(document).on(scroll_event, function(e) {e.preventDefault();});
-    $(document).on("touchmove.noScroll", function(e) {e.preventDefault();});
-};
-
-cs.scrollStart = function() {
-    var scroll_event = "onwheel" in document ? "wheel" : "onmousewheel" in document ? "mousewheel" : "DOMMouseScroll";
-    $(document).off(scroll_event);
-    $(document).off(".noScroll");
-};
-
 cs.checkParam = function() {
     var msg = "";
     if (cs.accessData.target === null) {
