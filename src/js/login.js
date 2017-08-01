@@ -1,30 +1,44 @@
-var cs = {};
-
-cs.accessData = {};
-cs.dataCnt = 0;
-cs.updCnt = 0;
-cs.insCnt = 0;
-cs.failCnt = 0;
-
-cs.debugCnt = 0;
-
-cs.getName = function(path) {
-  var collectionName = path;
-  var recordsCount = 0;
-  if (collectionName != undefined) {
-          recordsCount = collectionName.length;
-          var lastIndex = collectionName.lastIndexOf("/");
-          if (recordsCount - lastIndex === 1) {
-                  collectionName = path.substring(0, recordsCount - 1);
-                  recordsCount = collectionName.length;
-                  lastIndex = collectionName.lastIndexOf("/");
-          }
-          collectionName = path.substring(lastIndex + 1, recordsCount);
-  }
-  return collectionName;
-};
-
+/**
+ * Personium
+ * Copyright 2017 FUJITSU LIMITED
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *     http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
 $(document).ready(function() {
+    i18next
+    .use(i18nextXHRBackend)
+    .use(i18nextBrowserLanguageDetector)
+    .init({
+        fallbackLng: 'en',
+        ns: ['common', 'login', 'glossary'],
+        defaultNS: 'common',
+        debug: true,
+        backend: {
+            // load from i18next-gitbook repo
+            loadPath: './locales/{{lng}}/{{ns}}.json',
+            crossDomain: true
+        }
+    }, function(err, t) {
+        initJqueryI18next();
+        
+        cs.appendSessionExpiredDialog();
+        cs.additionalCallback();
+        
+        updateContent();
+    });
+});
+
+cs.additionalCallback = function() {
     var hash = location.hash.substring(1);
     var params = hash.split("&");
     for (var i in params) {
@@ -86,8 +100,7 @@ $(document).ready(function() {
                 }).fail(function(data) {
                     $('.login_area').css("display", "block");
                     cs.setIdleTime();
-                    $('#dispMsg').html('ログインに失敗しました。');
-                    $('#dispMsg').css("display", "block");
+                    cs.displayMessageByKey("login:msg.error.failedToLogin");
                 });
             } else {
                 $('.login_area').css("display", "block");
@@ -103,7 +116,7 @@ $(document).ready(function() {
     $('#bExtCalSmile').on('click', function () {
         var value = $("#otherAllowedCells option:selected").val();
         if (value == undefined || value === "") {
-            $("#popupSendAllowedErrorMsg").html('対象セルを選択して下さい。');
+            $("#popupSendAllowedErrorMsg").html(i18next.t("msg.info.pleaseSelectTargetCell"));
         } else {
             cs.getTargetToken(value).done(function(extData) {
                 var dispName = cs.getName(value);
@@ -117,29 +130,6 @@ $(document).ready(function() {
             });
         }
     });
-});
-
-cs.checkParam = function() {
-    var msg = "";
-    if (cs.accessData.target === null) {
-        msg = '対象セルが設定されていません。';
-    } else if (cs.accessData.token ===null) {
-        msg = 'トークンが設定されていません。';
-    } else if (cs.accessData.refToken === null) {
-        msg = 'リフレッシュトークンが設定されていません。';
-    } else if (cs.accessData.expires === null) {
-        msg = 'トークンの有効期限が設定されていません。';
-    } else if (cs.accessData.refExpires === null) {
-        msg = 'リフレッシュトークンの有効期限が設定されていません。';
-    }
-
-    if (msg.length > 0) {
-        $('#dispMsg').html(msg);
-        $('#dispMsg').css("display", "block");
-        return false;
-    }
-
-    return true;
 };
 
 cs.getGenkiAccessInfoAPI = function() {
@@ -197,12 +187,10 @@ cs.saveGenkiAccess = function() {
         }).done(function(res) {
             cs.transGenki(data);
         }).fail(function(res) {
-            $('#dispMsg').html('保存に失敗しました。');
-            $('#dispMsg').css("display", "block");
+            cs.displayMessageByKey("login:msg.error.failedToSaveData");
         });
     }).fail(function(data) {
-        $('#dispMsg').html('ログインに失敗しました。');
-        $('#dispMsg').css("display", "block");
+        cs.displayMessageByKey("login:msg.error.failedToLogin");
     });
 }
 
@@ -215,47 +203,3 @@ cs.transGenki = function(json) {
 
     location.href = "./genki.html";
 };
-
-// This method checks idle time
-cs.setIdleTime = function() {
-    document.onclick = function() {
-      LASTACTIVITY = new Date().getTime();
-      cs.refreshToken().done(function(data) {
-              token = data.access_token;
-              refToken = data.refresh_token;
-              expires = data.expires_in;
-              refExpires = data.refresh_token_expires_in;
-      });
-    };
-    document.onmousemove = function() {
-      LASTACTIVITY = new Date().getTime();
-      cs.refreshToken().done(function(data) {
-              token = data.access_token;
-              refToken = data.refresh_token;
-              expires = data.expires_in;
-              refExpires = data.refresh_token_expires_in;
-      });
-    };
-    document.onkeypress = function() {
-      LASTACTIVITY = new Date().getTime();
-      cs.refreshToken().done(function(data) {
-              token = data.access_token;
-              refToken = data.refresh_token;
-              expires = data.expires_in;
-              refExpires = data.refresh_token_expires_in;
-      });
-    };
-}
-cs.refreshToken = function() {
-    return $.ajax({
-        type: "POST",
-        url: cs.accessData.cellUrl + '__token',
-        processData: true,
-        dataType: 'json',
-        data: {
-               grant_type: "refresh_token",
-               refresh_token: cs.accessData.refToken
-        },
-        headers: {'Accept':'application/json'}
-    })
-}

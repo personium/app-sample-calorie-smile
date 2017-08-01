@@ -1,0 +1,32 @@
+{
+    "menu": "Menu",
+    "release": "Ungrant",
+    "approve": "Approve",
+    "decline": "Decline",
+    "reLogin": "Re-Login",
+    "expiredSession": "Expiration date of the session has expired.<br>Please login again.",
+    "readRequestTitle": "$t(glossary:readRequestTarget)_Read Permission Request",
+    "readRequestBody": "Please grant read permission for your $t(glossary:readRequestTarget).",
+    "readResponseTitle": "$t(glossary:readRequestTarget)_Read Permission Reply",
+    "readResponseApprovedBody": "Read permission is granted.",
+    "readResponseDeclinedBody": "Read permission is not granted.",
+    "me": "Me",
+    "msg": {
+        "info": {
+            "collaboratingData": "Collaborating data ...",
+            "pleaseSelectTargetCell": "Please select a cell.",
+            "messageSent": "Succeeded in sending the message."
+        },
+        "error": {
+            "failedToSendMessage": "Failed to send message.",
+            "targetCellNotSelected": "Target cell not selected.",
+            "tokenMissing": "Token is missing.",
+            "refreshTokenMissing": "Refresh token is missing.",
+            "tokenExpiryDateMissing": "Token's expiry date is not set.",
+            "refreshTokenExpiryDateMissing": "Refresh token's expiry date is not set.",
+            "failedToRetrieveData": "Failed to retrieve data.",
+            "dataNotFound": "Data not found.",
+            "failedToRefreshToken": "Failed to refresh token.<br>Please reload page."
+        }
+    }
+}

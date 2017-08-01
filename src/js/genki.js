@@ -1,30 +1,50 @@
-var cs = {};
-
-cs.accessData = {};
-cs.dataCnt = 0;
-cs.updCnt = 0;
-cs.insCnt = 0;
-cs.failCnt = 0;
-
-cs.debugCnt = 0;
-
-cs.getName = function(path) {
-  var collectionName = path;
-  var recordsCount = 0;
-  if (collectionName != undefined) {
-          recordsCount = collectionName.length;
-          var lastIndex = collectionName.lastIndexOf("/");
-          if (recordsCount - lastIndex === 1) {
-                  collectionName = path.substring(0, recordsCount - 1);
-                  recordsCount = collectionName.length;
-                  lastIndex = collectionName.lastIndexOf("/");
-          }
-          collectionName = path.substring(lastIndex + 1, recordsCount);
-  }
-  return collectionName;
-};
-
+/**
+ * Personium
+ * Copyright 2017 FUJITSU LIMITED
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *     http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
 $(document).ready(function() {
+    cs.dataCnt = 0;
+    cs.updCnt = 0;
+    cs.insCnt = 0;
+    cs.failCnt = 0;
+    cs.debugCnt = 0;
+    
+    i18next
+    .use(i18nextXHRBackend)
+    .use(i18nextBrowserLanguageDetector)
+    .init({
+        fallbackLng: 'en',
+        ns: ['common', 'login', 'glossary'],
+        defaultNS: 'common',
+        debug: true,
+        backend: {
+            // load from i18next-gitbook repo
+            loadPath: './locales/{{lng}}/{{ns}}.json',
+            crossDomain: true
+        }
+    }, function(err, t) {
+        initJqueryI18next();
+        
+        cs.appendSessionExpiredDialog();
+        cs.additionalCallback();
+        
+        updateContent();
+    });
+});
+
+cs.additionalCallback = function() {
     cs.accessData = JSON.parse(sessionStorage.getItem("accessInfo"));
 
     if (cs.checkParam()) {
@@ -34,7 +54,7 @@ $(document).ready(function() {
     $('#bExtCalSmile').on('click', function () {
         var value = $("#otherAllowedCells option:selected").val();
         if (value == undefined || value === "") {
-            $("#popupSendAllowedErrorMsg").html('対象セルを選択して下さい。');
+            $("#popupSendAllowedErrorMsg").html(i18next.t("msg.info.pleaseSelectTargetCell"));
         } else {
             cs.getTargetToken(value).done(function(extData) {
                 var dispName = cs.getName(value);
@@ -52,11 +72,10 @@ $(document).ready(function() {
     $('#bSendAllowed').on('click', function () {
         var value = $("#requestCells option:selected").val();
         if (value == undefined || value === "") {
-            $("#popupSendAllowedErrorMsg").html('対象セルを選択して下さい。');
+            $("#popupSendAllowedErrorMsg").html(i18next.t("msg.info.pleaseSelectTargetCell"));
         } else {
-            var title = "食事写真_閲覧許可依頼";
-            var body = "食事写真の閲覧許可をお願いします。";
-            //var reqRel = "ShokujiViewer";
+            var title = i18next.t("readRequestTitle");
+            var body = i18next.t("readRequestBody");
             var reqRel = "https://demo.personium.io/hn-app-genki/__relation/__/ShokujiViewer";
             cs.sendMessage(null, value, "req.relation.build", title, body, reqRel, cs.accessData.cellUrl);
         }
@@ -100,7 +119,7 @@ $(document).ready(function() {
         $(".overlay").removeClass('overlay-on');
         $(".slide-menu").removeClass('slide-on');
     });
-});
+}
 
 cs.openExtCellCalSmile = function() {
     $('#modal-extCellCalSmile').modal('show');
@@ -116,29 +135,6 @@ cs.listAllowed = function() {
 
 cs.receiveMessage = function() {
     $('#modal-receiveMessage').modal('show');
-};
-
-cs.checkParam = function() {
-    var msg = "";
-    if (cs.accessData.target === null) {
-        msg = '対象セルが設定されていません。';
-    } else if (cs.accessData.token ===null) {
-        msg = 'トークンが設定されていません。';
-    } else if (cs.accessData.refToken === null) {
-        msg = 'リフレッシュトークンが設定されていません。';
-    } else if (cs.accessData.expires === null) {
-        msg = 'トークンの有効期限が設定されていません。';
-    } else if (cs.accessData.refExpires === null) {
-        msg = 'リフレッシュトークンの有効期限が設定されていません。';
-    }
-
-    if (msg.length > 0) {
-        $('#dispMsg').html(msg);
-        $('#dispMsg').css("display", "block");
-        return false;
-    }
-
-    return true;
 };
 
 cs.transGenki = function(json) {
@@ -160,10 +156,9 @@ cs.dispGenkikun = function() {
 };
 
 cs.getGenkikunData = function() {
-    $('#MigrationGenki').prop('disabled', true);
-    $('#MigrationGenki').toggleClass("spinIcon");
-    $('#dispMsg').html('データ連携中です...');
-    $('#dispMsg').css("display", "block");
+    cs.startAnimation();
+    cs.displayMessageByKey("msg.info.collaboratingData");
+
     $.when(
         cs.getJissekiLatestDateAPI(),
         cs.getSokuteiLatestDateAPI(),
@@ -194,58 +189,21 @@ cs.getGenkikunData = function() {
         ).done(function(resultJ, resultS, resultSh) {
             cs.updateGenkikunData(resultJ, resultS, resultSh);
         }).fail(function(result) {
-            $('#dispMsg').html('データの取得に失敗しました。');
-            $('#dispMsg').css("display", "block");
-            $('#MigrationGenki').prop('disabled', false);
-            $('#MigrationGenki').removeClass("spinIcon");
+            cs.displayMessageByKey("msg.error.failedToRetrieveData");
+            cs.stopAnimation();
         });
-        //var prevDate = "";
-        //var resJ = dataJ[0].d.results;
-        //var resS = dataS[0].d.results;
-        //var resSh = dataSh[0].d.results;
-        //if (resJ.length > 0 && resS.length > 0 && resSh.length > 0) {
-        //    var prevDateJ = resJ[0].jisseki_date;
-        //    var prevDateS = resS[0].sokutei_date;
-        //    var prevDateSh = resSh[0].shokuji_date;
-        //    if (prevDateJ > prevDateS) {
-        //        prevDate = prevDateS;
-        //    } else {
-        //        prevDate = prevDateJ;
-        //    }
-        //    if (prevDate > prevDateSh) {
-        //        prevDate = prevDateSh;
-        //    }
-
-        //    prevDate = prevDate.replace(/\//g, "");
-        //}
-        //cs.getDataAPI(prevDate).done(function(result) {
-        //    cs.updateGenkikunData(result);
-        //}).fail(function(result) {
-        //    $('#dispMsg').html('データの取得に失敗しました。');
-        //    $('#dispMsg').css("display", "block");
-        //    $('#MigrationGenki').prop('disabled', false);
-        //    $('#MigrationGenki').removeClass("spinIcon");
-        //});
     }).fail(function(result) {
-        $('#dispMsg').html('データの取得に失敗しました。');
-        $('#dispMsg').css("display", "block");
-        $('#MigrationGenki').prop('disabled', false);
-        $('#MigrationGenki').removeClass("spinIcon");
+        cs.displayMessageByKey("msg.error.failedToRetrieveData");
+        cs.stopAnimation();
     });
-    //cs.getLatestDateAPI().done(function(data) {
-    //    var res = data.d.results;
-    //    var prevDate = "";
-    //    if (res.length > 0) {
-    //        prevDate = res[0].jisseki_date;
-    //        prevDate = prevDate.replace(/\u002f/g, "");
-    //    }
-    //    cs.getDataAPI(prevDate).done(function(result) {
-    //        cs.updateGenkikunData(result);
-    //    }).fail(function(result) {
-    //        $('#dispMsg').html('データの取得に失敗しました。');
-    //        $('#dispMsg').css("display", "block");
-    //    });
-    //});
+};
+cs.startAnimation = function() {
+    $('#MigrationGenki').prop('disabled', true);
+    $('#MigrationGenki').addClass("spinIcon");
+};
+cs.stopAnimation = function() {
+    $('#MigrationGenki').prop('disabled', false);
+    $('#MigrationGenki').removeClass("spinIcon");
 };
 //cs.updateGenkikunData = function(result) {
 cs.updateGenkikunData = function(resultJ, resultS, resultSh) {
@@ -287,7 +245,6 @@ cs.debugCnt += shokujiInfo.length
             cs.shokujiInfoLinkage(jsonInfo);
         }
     }
-    //$('#nowLinkageParent').css("display", "block");
 
     for (var i in sokutei) {
         var json = {
@@ -520,11 +477,8 @@ cs.updateLinkageProgress = function() {
 
     $("#nowLinkage").css("width", par + "%");
     if (par >= 100) {
-        //$('#dispMsg').html('データ連携が完了しました。<br>(新規:' + cs.insCnt + '件,更新:' + cs.updCnt + '件,失敗:'+ cs.failCnt +'件)');
-        $('#dispMsg').css("display", "none");
-        //$('#nowLinkageParent').css("display", "none");
-        $('#MigrationGenki').prop('disabled', false);
-        $('#MigrationGenki').removeClass("spinIcon");
+        $('#dispMsg').hide();
+        cs.stopAnimation();
         cs.dispPhoto(0, 50);
     }
 };
@@ -630,13 +584,13 @@ cs.dispAllowedCellListAfter = function(extUrl, no) {
         }
         cs.appendAllowedCellList(extUrl, dispName, no)
     }).fail(function() {
-        var dispName = mb.getName(extUrl);
+        var dispName = cs.getName(extUrl);
         cs.appendAllowedCellList(extUrl, dispName, no)
     });
 };
 
 cs.appendAllowedCellList = function(extUrl, dispName, no) {
-    $("#allowedCellList").append('<tr id="deleteExtCellRel' + no + '"><td class="paddingTd">' + dispName + '</td><td><button onClick="cs.notAllowedCell(\'' + extUrl + '\', ' + no + ')">解除</button></td></tr>');
+    $("#allowedCellList").append('<tr id="deleteExtCellRel' + no + '"><td class="paddingTd">' + dispName + '</td><td><button onClick="cs.notAllowedCell(\'' + extUrl + '\', ' + no + ')">' + i18next.t("release") + '</button></td></tr>');
 };
 
 cs.notAllowedCell = function(extUrl, no) {
@@ -663,8 +617,8 @@ cs.getReceiveMessage = function() {
                         html += '<table class="display-table"><tr><td width="80%">' + body + '</td></tr></table>';
                     } else {
                         html += '<table class="display-table"><tr><td width="80%">' + body + '</td>';
-                        html += '<td width="10%"><button onClick="cs.approvalRel(\'' + fromCell + '\', \'' + uuid + '\', \'recMsgParent' + i + '\');">承諾</button></td>';
-                        html += '<td width="10%"><button onClick="cs.rejectionRel(\'' + fromCell + '\', \'' + uuid + '\', \'recMsgParent' + i + '\');">拒否</button></td>';
+                        html += '<td width="10%"><button onClick="cs.approvalRel(\'' + fromCell + '\', \'' + uuid + '\', \'recMsgParent' + i + '\');">' + i18next.t("approve") +'</button></td>';
+                        html += '<td width="10%"><button onClick="cs.rejectionRel(\'' + fromCell + '\', \'' + uuid + '\', \'recMsgParent' + i + '\');">' + i18next.t("decline") + '</button></td>';
                         html += '</tr></table>';
                     }
                     html += '</div></div></div>';
@@ -678,26 +632,6 @@ cs.getReceiveMessage = function() {
     });
 };
 
-cs.approvalRel = function(extCell, uuid, msgId) {
-    cs.changeStatusMessageAPI(uuid, "approved").done(function() {
-        $("#" + msgId).remove();
-        mb.getAllowedCellList();
-        var title = "MyBoard_登録依頼返信";
-        var body = "承認しました。";
-        mb.sendMessage(uuid, extCell, "message", title, body);
-    });
-};
-
-cs.rejectionRel = function(extCell, uuid, msgId) {
-    cs.changeStatusMessageAPI(uuid, "rejected").done(function() {
-        $("#" + msgId).remove();
-        mb.getAllowedCellList();
-        var title = "MyBoard_登録依頼返信";
-        var body = "拒否しました。";
-        mb.sendMessage(uuid, extCell, "message", title, body);
-    });
-};
-
 cs.dispPhotoImage = function(cellUrl, token, title) {
     if (cellUrl) {
         cs.accessData.photoCell = cellUrl + cs.accessData.boxName;
@@ -706,7 +640,7 @@ cs.dispPhotoImage = function(cellUrl, token, title) {
     } else {
         cs.accessData.photoCell = cs.accessData.target;
         cs.accessData.photoToken = cs.accessData.token;
-        cs.accessData.Title = "自分";
+        cs.accessData.Title = i18next.t("me");
     }
     
     sessionStorage.setItem("accessInfo", JSON.stringify(cs.accessData));
@@ -715,17 +649,17 @@ cs.dispPhotoImage = function(cellUrl, token, title) {
 
 cs.sendMessage = function(uuid, extCell, type, title, body, reqRel, reqRelTar) {
     cs.getAppToken().done(function(appToken) {
-        cs.getMsgToken(appToken.access_token).done(function(msgToken) {
+        cs.getAppCellToken(appToken.access_token).done(function(msgToken) {
             cs.sendMessageAPI(uuid, extCell, type, title, body, reqRel, reqRelTar, msgToken.access_token).done(function(data) {
-                $("#popupSendAllowedErrorMsg").html('メッセージを送信しました。');
+                $("#popupSendAllowedErrorMsg").html(i18next.t("msg.info.messageSent"));
             }).fail(function(data) {
-                $("#popupSendAllowedErrorMsg").html('メッセージの送信に失敗しました。');
+                $("#popupSendAllowedErrorMsg").html(i18next.t("msg.error.failedToSendMessage"));
             });
         }).fail(function(msgToken) {
-            $("#popupSendAllowedErrorMsg").html('メッセージの送信に失敗しました。');
+            $("#popupSendAllowedErrorMsg").html(i18next.t("msg.error.failedToSendMessage"));
         });
     }).fail(function(appToken) {
-        $("#popupSendAllowedErrorMsg").html('メッセージの送信に失敗しました。');
+        $("#popupSendAllowedErrorMsg").html(i18next.t("msg.error.failedToSendMessage"));
     });
 };
 
@@ -754,34 +688,29 @@ cs.dispPhoto = function(skip, top) {
             var html = '';
             if (nowDate !== shokujiDate) {
                 nowDate = shokujiDate;
-                //html = '<table border="1" class="photoTable" id="td' + dateId + '"><tr>';
-                //html += '<td style="text-align:left" colspan="3">' + nowDate + '</td>';
-                //html += '</tr><tr>';
-                //html += '<td style="text-align:left;">写真</td>';
-                //html += '<td style="text-align:left">日時</td>';
-                //html += '<td style="text-align:left">コメント</td>';
-                //html += '</tr></table>';
                 html = '<section class="meal-section"><h2>' + nowDate.replace(/\/|\-/g, ".") + '</h2><div class="daily-meal" id="td' + dateId + '"></div></section>';
 
                 $('#dvMainArea').append(html);
             }
 
-            //html = '<tr>';
-            //html += '<td id="im' + dateId + timeId + noId + '" class="widthImg heightTd imgContain" style="text-align:center;"></td>';
-            //html += '<td class="widthImg" style="text-align:left">' + shokujiTime + '</td>';
-            //html += '<td class="widthComm" style="text-align:left">' + dataList[i].shokuji_comment + '</td>';
-            //html += '</tr>';
-            html = '<div class="meal">';
-            html += '<div class="picture">';
-            html += '<img id="im' + dateId + timeId + noId + '" alt="食べ物">';
-            html += '</div>';
-            html += '<div class="time">' + dispTime + '</div>';
             var comm = dataList[i].shokuji_comment;
             if (!comm) {
                 comm = "";
             }
-            html += '<div class="comment">' + comm + '</div>';
-            html += '</div>';
+            var imageId = ["im", dateId, timeId, noId].join("");
+            html = [
+                '<div class="meal">',
+                    '<div class="picture">',
+                        '<img id="' + imageId + '" alt="' + i18next.t("glossary:food") + '">',
+                    '</div>',
+                    '<div class="time">',
+                        dispTime,
+                    '</div>',
+                    '<div class="comment">',
+                        comm,
+                    '</div>',
+                '</div>'
+            ].join("");
 
             $("#td" + dateId).append(html);
             cs.setPhoto(dateId, timeId, noId, imageName);
@@ -790,12 +719,10 @@ cs.dispPhoto = function(skip, top) {
         if (dataList.length > 0) {
             $('#dvMainArea').css("display", "block");
         } else {
-            $('#dispMsg').html('データがありません。');
-            $('#dispMsg').css("display", "block");
+            cs.displayMessageByKey("msg.error.dataNotFound");
         }
     }).fail(function(data) {
-        $('#dispMsg').html('データがありません。');
-        $('#dispMsg').css("display", "block");
+        cs.displayMessageByKey("msg.error.dataNotFound");
     });
 }
 
@@ -849,50 +776,6 @@ cs.getDispPhotoAPI = function(skip, top) {
 cs.openSlide = function() {
     $(".overlay").toggleClass('overlay-on');
     $(".slide-menu").toggleClass('slide-on');
-}
-
-// This method checks idle time
-cs.setIdleTime = function() {
-    document.onclick = function() {
-      LASTACTIVITY = new Date().getTime();
-      cs.refreshToken().done(function(data) {
-              token = data.access_token;
-              refToken = data.refresh_token;
-              expires = data.expires_in;
-              refExpires = data.refresh_token_expires_in;
-      });
-    };
-    document.onmousemove = function() {
-      LASTACTIVITY = new Date().getTime();
-      cs.refreshToken().done(function(data) {
-              token = data.access_token;
-              refToken = data.refresh_token;
-              expires = data.expires_in;
-              refExpires = data.refresh_token_expires_in;
-      });
-    };
-    document.onkeypress = function() {
-      LASTACTIVITY = new Date().getTime();
-      cs.refreshToken().done(function(data) {
-              token = data.access_token;
-              refToken = data.refresh_token;
-              expires = data.expires_in;
-              refExpires = data.refresh_token_expires_in;
-      });
-    };
-}
-cs.refreshToken = function() {
-    return $.ajax({
-        type: "POST",
-        url: cs.accessData.cellUrl + '__token',
-        processData: true,
-        dataType: 'json',
-        data: {
-               grant_type: "refresh_token",
-               refresh_token: cs.accessData.refToken
-        },
-        headers: {'Accept':'application/json'}
-    })
 }
 
 cs.getExtCell = function() {
@@ -1002,38 +885,6 @@ cs.getDataAPI = function(prevDate) {
   });
 };
 
-cs.getAppToken = function() {
-  return $.ajax({
-                type: "POST",
-                url: 'https://demo.personium.io/hn-app-genki/__token',
-                processData: true,
-        dataType: 'json',
-                data: {
-                        grant_type: "password",
-                        username: "megenki",
-                        password: "personiumgenki",
-                        p_target: cs.accessData.cellUrl
-                },
-        headers: {'Accept':'application/json'}
-         });
-};
-
-cs.getMsgToken = function(appToken) {
-    return $.ajax({
-                type: "POST",
-                url: cs.accessData.cellUrl + '__token',
-                processData: true,
-                dataType: 'json',
-                data: {
-                    grant_type: "refresh_token",
-                    refresh_token: cs.accessData.refToken,
-                    client_id: "https://demo.personium.io/hn-app-genki/",
-                    client_secret: appToken
-                },
-                headers: {'Accept':'application/json'}
-    });
-};
-
 cs.sendMessageAPI = function(uuid, extCell, type, title, body, reqRel, reqRelTar, msgToken) {
     var data = {};
     data.BoxBound = true;
@@ -1086,17 +937,4 @@ cs.getReceivedMessageAPI = function() {
                     'Accept':'application/json'
                 }
   });
-};
-
-cs.changeStatusMessageAPI = function(uuid, command) {
-    var data = {};
-    data.Command = command;
-    return $.ajax({
-            type: "POST",
-            url: cs.accessData.cellUrl + '__message/received/' + uuid,
-            data: JSON.stringify(data),
-            headers: {
-                    'Authorization':'Bearer ' + cs.accessData.token
-            }
-    })
 };

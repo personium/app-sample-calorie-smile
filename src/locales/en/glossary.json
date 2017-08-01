@@ -1,0 +1,33 @@
+{
+    "title": "Calorie Smile",
+    "link": "Link",
+    "calorieSmileCollaboration": "Calorie Smile Collaboration",
+    "linkBtn": "$t(glossary:link) data",
+    "photosOfMeals": "Photos of Meals",
+    "food": "food",
+    "photosOfMealsOf": "{{title}}'s $t(glossary:photosOfMeals)",
+    "readRequestTarget": "$t(glossary:photosOfMeals)",
+    "menu": {
+        "lookAtOtherPhotos": {
+            "title": "View another user's photos",
+            "header": "Select a user.",
+            "btn": "View"
+        },
+        "sendReadPermissionRequest": {
+            "title": "Send view permission",
+            "header": "Select a user whose photos you want to view.",
+            "btn": "Send"
+        },
+        "readPermissionStatus": {
+            "title": "Viewed by",
+            "header": "List of users which you have granted view permissions"
+        },
+        "notification": {
+            "title": "Notifications",
+            "header": "List of notifications"
+        },
+        "gotoCalorieSmile": {
+            "title": "Access Calorie Smile's home page"
+        }
+    }
+}
