@@ -908,9 +908,9 @@ cs.getExtCell = function() {
 
 cs.getProfile = function(url) {
     return $.ajax({
-	type: "GET",
-	url: url + '__/profile.json',
-	dataType: 'json',
+    type: "GET",
+    url: url + '__/profile.json',
+    dataType: 'json',
         headers: {'Accept':'application/json'}
     })
 };
@@ -920,13 +920,13 @@ cs.getTargetToken = function(extCellUrl) {
                 type: "POST",
                 url: cs.accessData.cellUrl + '__token',
                 processData: true,
-		dataType: 'json',
+        dataType: 'json',
                 data: {
                         grant_type: "refresh_token",
                         refresh_token: cs.accessData.refToken,
                         p_target: extCellUrl
                 },
-		headers: {'Accept':'application/json'}
+        headers: {'Accept':'application/json'}
          });
 };
 
@@ -1007,44 +1007,31 @@ cs.getAppToken = function() {
                 type: "POST",
                 url: 'https://demo.personium.io/hn-app-genki/__token',
                 processData: true,
-		dataType: 'json',
+        dataType: 'json',
                 data: {
                         grant_type: "password",
                         username: "megenki",
                         password: "personiumgenki",
                         p_target: cs.accessData.cellUrl
                 },
-		headers: {'Accept':'application/json'}
+        headers: {'Accept':'application/json'}
          });
 };
 
 cs.getMsgToken = function(appToken) {
-  return $.ajax({
+    return $.ajax({
                 type: "POST",
                 url: cs.accessData.cellUrl + '__token',
                 processData: true,
-		dataType: 'json',
+                dataType: 'json',
                 data: {
-                        grant_type: "password",
-                        username: "me",
-                        password: "personium",
-                        client_id: "https://demo.personium.io/hn-app-genki/",
-                        client_secret: appToken
+                    grant_type: "refresh_token",
+                    refresh_token: cs.accessData.refToken,
+                    client_id: "https://demo.personium.io/hn-app-genki/",
+                    client_secret: appToken
                 },
-                //data: {
-                //        grant_type: "refresh_token",
-                //        refresh_token: cs.accessData.refToken,
-                //        client_id: "https://demo.personium.io/hn-app-genki/",
-                //        client_secret: appToken
-                //},
-                //data: {
-                //        grant_type: "urn:ietf:params:oauth:grant-type:saml2-bearer",
-                //        assertion: "Bearer " + cs.accessData.token,
-                //        client_id: "https://demo.personium.io/hn-app-genki/",
-                //        client_secret: appToken
-                //},
-		headers: {'Accept':'application/json'}
-         });
+                headers: {'Accept':'application/json'}
+    });
 };
 
 cs.sendMessageAPI = function(uuid, extCell, type, title, body, reqRel, reqRelTar, msgToken) {
