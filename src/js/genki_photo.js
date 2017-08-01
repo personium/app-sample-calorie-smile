@@ -43,6 +43,7 @@ $(document).ready(function() {
 });
 
 function additionalCallback() {
+    cs.setIdleTime();
     dispPhoto();
     $('#photoTitle').attr("data-i18n-options", ["{ \"title\": \"", cs.accessData.Title, "\" }"].join(''));
 };

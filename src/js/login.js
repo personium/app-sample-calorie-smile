@@ -69,6 +69,7 @@ cs.additionalCallback = function() {
     }
 
     if (cs.checkParam()) {
+        cs.setIdleTime();
         cs.getGenkiAccessInfoAPI().done(function(json) {
             var loginFlag = false;
             if (json !== undefined) {
@@ -99,17 +100,14 @@ cs.additionalCallback = function() {
                     cs.transGenki(data);
                 }).fail(function(data) {
                     $('.login_area').css("display", "block");
-                    cs.setIdleTime();
                     cs.displayMessageByKey("login:msg.error.failedToLogin");
                 });
             } else {
                 $('.login_area').css("display", "block");
-                cs.setIdleTime();
             }
             
         }).fail(function(data) {
             $('.login_area').css("display", "block");
-            cs.setIdleTime();
         });
     }
 

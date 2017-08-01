@@ -119,49 +119,54 @@ cs.getName = function(path) {
   return collectionName;
 };
 
-// This method checks idle time
+/*
+ * Initialize info for idling check
+ */
 cs.setIdleTime = function() {
-    document.onclick = function() {
-      LASTACTIVITY = new Date().getTime();
-      cs.refreshToken().done(function(data) {
-              token = data.access_token;
-              refToken = data.refresh_token;
-              expires = data.expires_in;
-              refExpires = data.refresh_token_expires_in;
-      });
-    };
-    document.onmousemove = function() {
-      LASTACTIVITY = new Date().getTime();
-      cs.refreshToken().done(function(data) {
-              token = data.access_token;
-              refToken = data.refresh_token;
-              expires = data.expires_in;
-              refExpires = data.refresh_token_expires_in;
-      });
-    };
-    document.onkeypress = function() {
-      LASTACTIVITY = new Date().getTime();
-      cs.refreshToken().done(function(data) {
-              token = data.access_token;
-              refToken = data.refresh_token;
-              expires = data.expires_in;
-              refExpires = data.refresh_token_expires_in;
-      });
-    };
+    cs.refreshToken();
+
+    // check 5 minutes before session expires (60minutes)
+    cs.checkIdleTimer = setInterval(cs.checkIdleTime, cs.IDLE_CHECK);
+
+    $(document).on('click mousemove keypress', function (event) {
+        cs.lastActivity = new Date().getTime();
+    });
 }
+
+/*
+ * idling check 
+ * cs.lastActivity + cs.accessData.expires * 1000
+ */
+cs.checkIdleTime = function() {
+    if (new Date().getTime() > cs.lastActivity + cs.IDLE_TIMEOUT) {
+        cs.stopIdleTimer();
+        $('#modal-session-expired').modal('show');
+    } else {
+        cs.refreshToken();
+    }
+};
+
+cs.stopIdleTimer = function() {
+    clearInterval(cs.checkIdleTimer);
+    $(document).off('click mousemove keypress');
+};
+
 cs.refreshToken = function() {
-    return $.ajax({
-        type: "POST",
-        url: cs.accessData.cellUrl + '__token',
-        processData: true,
-        dataType: 'json',
-        data: {
-               grant_type: "refresh_token",
-               refresh_token: cs.accessData.refToken
-        },
-        headers: {'Accept':'application/json'}
-    })
-}
+    cs.getAppToken().done(function(appToken) {
+        cs.getAppCellToken(appToken.access_token).done(function(appCellToken) {
+            // update sessionStorage
+            cs.accessData.token = appCellToken.access_token;
+            cs.accessData.refToken = appCellToken.refresh_token;
+            cs.accessData.expires = appCellToken.expires_in;
+            cs.accessData.refExpires = appCellToken.refresh_token_expires_in;
+            sessionStorage.setItem("accessInfo", JSON.stringify(cs.accessData));
+        }).fail(function(appCellToken) {
+            cs.displayMessageByKey("msg.error.failedToRefreshToken");
+        });
+    }).fail(function(appToken) {
+        cs.displayMessageByKey("msg.error.failedToRefreshToken");
+    });
+};
 
 cs.getAppToken = function() {
   return $.ajax({

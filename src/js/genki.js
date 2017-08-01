@@ -48,6 +48,7 @@ cs.additionalCallback = function() {
     cs.accessData = JSON.parse(sessionStorage.getItem("accessInfo"));
 
     if (cs.checkParam()) {
+        cs.setIdleTime();
         cs.transGenki();
     }
 
