@@ -1,32 +1,37 @@
 <!DOCTYPE html>
-<html lang="ja">
+<html>
 <head>
-    <meta charset="utf-8">
-    <meta http-equiv="X-UA-Compatible" content="IE=edge">
-    <meta name="viewport" content="width=device-width, initial-scale=1">
-    <title>カロリースマイル</title>
-    <link href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.1/css/bootstrap.min.css" rel="stylesheet">
-    <script src="https://ajax.googleapis.com/ajax/libs/jquery/1.11.1/jquery.min.js"></script>
-    <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.1/js/bootstrap.min.js"></script>
-    <script src="./js/login.js"></script>
-    <link href='https://fonts.googleapis.com/css?family=Raleway:400,200' rel='stylesheet' type='text/css'>
-    <link href='./css/login.css' rel='stylesheet' type='text/css'>
+  <meta charset="utf-8">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title data-i18n="glossary:title"></title>
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/twitter-bootstrap/3.3.7/css/bootstrap.min.css" />
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.2.1/jquery.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/i18next/8.4.3/i18next.min.js"></script>
+  <script src="https://unpkg.com/i18next-xhr-backend/i18nextXHRBackend.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/i18next-browser-languagedetector/2.0.0/i18nextBrowserLanguageDetector.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery-i18next/1.2.0/jquery-i18next.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/twitter-bootstrap/3.3.7/js/bootstrap.min.js"></script>
+  <script src="./js/common.js"></script>
+  <script src="./js/login.js"></script>
+  <link href='https://fonts.googleapis.com/css?family=Raleway:400,200' rel='stylesheet' type='text/css'>
+  <link href='./css/login.css' rel='stylesheet' type='text/css'>
 </head>
 <body>
   <section class="login-section">
-    <h1><img src="./image/top.png" alt="カロリースマイル"></h1>
+    <h1><img src="./image/top.png" data-i18n="[alt]glossary:title"></h1>
 
-    <div>「カロリースマイル」とデータを連携します。</div>
+    <div data-i18n="login:description"></div>
 
     <div class="login-form-controls">
       <div>
-        <input id="iGenkikunId" type="text" placeholder="ID を入力して下さい。" value="">
+        <input id="iGenkikunId" type="text" data-i18n="[placeholder]login:id" value="">
       </div>
       <div>
-        <input id="iGenkikunPw" type="password" placeholder="PW を入力して下さい。" value="">
+        <input id="iGenkikunPw" type="password" data-i18n="[placeholder]login:password" value="">
       </div>
       <div>
-        <button class="login_btn round-btn" id="register" onClick="cs.saveGenkiAccess();return false;">連携する</button>
+        <button class="login_btn round-btn" id="register" onClick="cs.saveGenkiAccess();return false;" data-i18n="glossary:linkBtn"></button>
       </div>
     </div>
     <input id="iGenkikunUrl" type="hidden" value="https://pdsc.questcom.co.jp/"/>
@@ -36,36 +41,5 @@
     <div id="dispMsg" style="display:none;">
     </div>
   </section>
-<!--
-    <div class="main_box row">
-        <div class="col-md-12 col-xs-12 service-logoback" align="center">
-            <img class="service-logo" src="./image/top.png">
-        </div>
-        <div class="col-md-12 col-xs-12" align="center">
-            <div class="info">
-                <p class="text-muted">「カロリースマイル」<br>とデータを連携します</p>
-            </div>
-            <div>
-                <div class="control">
-                    <input id="iGenkikunId" type="text" class="form-control" placeholder="ID を入力して下さい。" value=""/>
-                </div>
-                <div class="control">
-                    <input id="iGenkikunPw" type="text" class="form-control" placeholder="PW を入力して下さい。" value=""/>
-                </div>
-                <div align="center">
-                     <button class="login_btn" id="register" onClick="cs.saveGenkiAccess();return false;">連携する</button>
-                </div>
-            </div>
-            <div align="right">
-                <span id="MigrationGenki" class="glyphicon glyphicon-repeat glyphiconStyle" onClick="cs.getGenkikunData();return false;" style="display:none;"></span>
-            </div>
-            <div id="dispMsg" style="display:none;">
-            </div>
-            <div class="main_area" id="dvMainArea" style="display:none;">
-                
-            </div>
-        </div>
-    </div>
--->
 </body>
 </html>

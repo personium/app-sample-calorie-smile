@@ -1,0 +1,11 @@
+{
+    "description": "「$t(glossary:title)」とデータを$t(glossary:link)します。",
+    "id": "IDを入力",
+    "password": "パスワードを入力",
+    "msg": {
+        "error": {
+            "failedToLogin": "ログインに失敗しました。",
+            "failedToSaveData": "保存に失敗しました。"
+        }
+    }
+}

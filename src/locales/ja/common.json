@@ -1,0 +1,32 @@
+{
+    "menu": "メニュー",
+    "release": "解除",
+    "approve": "承諾",
+    "decline": "拒否",
+    "reLogin": "再ログイン",
+    "expiredSession": "セッションの期限が切れています。<br>ログインし直して下さい。",
+    "readRequestTitle": "$t(glossary:readRequestTarget)_閲覧許可依頼",
+    "readRequestBody": "$t(glossary:readRequestTarget)の閲覧許可をお願いします。",
+    "readResponseTitle": "$t(glossary:readRequestTarget)_登録依頼返信",
+    "readResponseApprovedBody": "承認しました。",
+    "readResponseDeclinedBody": "拒否しました。",
+    "me": "自分",
+    "msg": {
+        "info": {
+            "collaboratingData": "データ連携中です...",
+            "pleaseSelectTargetCell": "対象セルを選択して下さい。",
+            "messageSent": "メッセージを送信しました。"
+        },
+        "error": {
+            "failedToSendMessage": "メッセージの送信に失敗しました。",
+            "targetCellNotSelected": "対象セルが設定されていません。",
+            "tokenMissing": "トークンが設定されていません。",
+            "refreshTokenMissing": "リフレッシュ$t(msg.error.tokenMissing)",
+            "tokenExpiryDateMissing": "トークンの有効期限が設定されていません。",
+            "refreshTokenExpiryDateMissing": "リフレッシュ$t(msg.error.tokenExpiryDateMissing)",
+            "failedToRetrieveData": "データの取得に失敗しました。",
+            "dataNotFound": "データがありません。",
+            "failedToRefreshToken": "リフレッシュトークンの更新に失敗しました。<br>画面をリロードしてください。"
+        }
+    }
+}

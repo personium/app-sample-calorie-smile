@@ -1,221 +1,140 @@
 <!DOCTYPE html>
-<html lang="ja">
+<html>
 <head>
-    <meta charset="utf-8">
-    <meta http-equiv="X-UA-Compatible" content="IE=edge">
-    <meta name="viewport" content="width=device-width, initial-scale=1">
-    <title>カロリースマイル</title>
-    <link href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.1/css/bootstrap.min.css" rel="stylesheet">
-    <script src="https://ajax.googleapis.com/ajax/libs/jquery/1.11.1/jquery.min.js"></script>
-    <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.1/js/bootstrap.min.js"></script>
-    <script src="./js/genki.js"></script>
-    <link href='https://fonts.googleapis.com/css?family=Raleway:400,200' rel='stylesheet' type='text/css'>
-    <link href='./css/genki.css' rel='stylesheet' type='text/css'>
+  <meta charset="utf-8">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title data-i18n="glossary:title"></title>
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/twitter-bootstrap/3.3.7/css/bootstrap.min.css" />
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.2.1/jquery.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/i18next/8.4.3/i18next.min.js"></script>
+  <script src="https://unpkg.com/i18next-xhr-backend/i18nextXHRBackend.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/i18next-browser-languagedetector/2.0.0/i18nextBrowserLanguageDetector.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery-i18next/1.2.0/jquery-i18next.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/twitter-bootstrap/3.3.7/js/bootstrap.min.js"></script>
+  <script src="./js/common.js"></script>
+  <script src="./js/common_personium.js"></script>
+  <script src="./js/genki.js"></script>
+  <link href='https://fonts.googleapis.com/css?family=Raleway:400,200' rel='stylesheet' type='text/css'>
+  <link href='./css/genki.css' rel='stylesheet' type='text/css'>
 </head>
 <body>
-    <header>
-      <h1>カロリースマイル連携</h1>
-      <a id="MigrationGenki" href="#" onclick="cs.getGenkikunData();return false;">
-        <img id="reloadIcon" src="./image/parts_ico_reload.png" alt="user">
-      </a>
-      <a href="#" onclick="cs.openSlide();">
-        <img id="menuIcon" src="./image/parts_menu.png">
-      </a>
-    </header>
-    <div id="dispMsg" style="display:none;">
-    </div>
-    <span id="dvMainArea">
-        
-    </span>
-    <div class="slide-menu">
-      <h1>メニュー</h1>
-      <table class="menu-title">
-        <tr>
-          <td class="sidemenu-item"><h3>
-            <a onClick="cs.openExtCellCalSmile();" href="javascript:void(0)" class="allToggle">他の人の食事写真を見る</a>
-            <!--他の人の食事写真を見る-->
-          </h3></td>
-        </tr>
-        <tr>
-          <td class="sidemenu-item"><h3>
-            <a onClick="cs.openSendAllowedMessage();" href="javascript:void(0)" class="allToggle">閲覧許可依頼送信</a>
-            <!--閲覧許可依頼送信-->
-          </h3></td>
-        </tr>
-        <tr>
-          <td class="sidemenu-item"><h3>
-            <a onClick="cs.listAllowed();" href="javascript:void(0)" class="allToggle">閲覧許可状況</a>
-            <!--閲覧許可状況-->
-          </h3></td>
-        </tr>
-        <tr>
-          <td class="sidemenu-item"><h3>
-            <a onClick="cs.receiveMessage();" href="javascript:void(0)" class="allToggle">通知</a>
-            <!--通知-->
-          </h3></td>
-        </tr>
-        <tr>
-          <td class="sidemenu-item"><h3>
-            <a onClick="cs.dispGenkikun();return false;" href="javascript:void(0)" class="allToggle">CalorieSmileへアクセス</a>
-          </h3></td>
-        </tr>
-      </table>
-    </div>
-    <div class="overlay" id="dvOverlay">
-    </div>
-    <div id="modal-extCellCalSmile" class="modal fade" role="dialog">
-      <div class="modal-dialog">
-        <div class="modal-content">
-          <div class="modal-header">
-            <button type="button" class="close" data-dismiss="modal">×</button>
-            <h4 class="modal-title" id="header-public">閲覧するユーザーを選択して下さい。</h4>
-          </div>
-          <div class="modal-body">
-            <select id="otherAllowedCells"></select>
-            <button id="bExtCalSmile">閲覧</button>
-          </div>
-          <div class="modal-footer">
-            
-          </div>
+  <header>
+    <h1 data-i18n="glossary:calorieSmileCollaboration"></h1>
+    <a id="MigrationGenki" href="#" onclick="cs.getGenkikunData();return false;">
+      <img id="reloadIcon" src="./image/parts_ico_reload.png" alt="user">
+    </a>
+    <a href="#" onclick="cs.openSlide();">
+      <img id="menuIcon" src="./image/parts_menu.png">
+    </a>
+  </header>
+  <div id="dispMsg" style="display:none;">
+  </div>
+  <span id="dvMainArea">
+      
+  </span>
+  <div class="slide-menu">
+    <h1 data-i18n="menu"></h1>
+    <table class="menu-title">
+      <tr>
+        <td class="sidemenu-item"><h3>
+          <a onClick="cs.openExtCellCalSmile();" href="javascript:void(0)" class="allToggle" data-i18n="glossary:menu.lookAtOtherPhotos.title"></a>
+        </h3></td>
+      </tr>
+      <tr>
+        <td class="sidemenu-item"><h3>
+          <a onClick="cs.openSendAllowedMessage();" href="javascript:void(0)" class="allToggle" data-i18n="glossary:menu.sendReadPermissionRequest.title"></a>
+        </h3></td>
+      </tr>
+      <tr>
+        <td class="sidemenu-item"><h3>
+          <a onClick="cs.listAllowed();" href="javascript:void(0)" class="allToggle" data-i18n="glossary:menu.readPermissionStatus.title"></a>
+        </h3></td>
+      </tr>
+      <tr>
+        <td class="sidemenu-item"><h3>
+          <a onClick="cs.receiveMessage();" href="javascript:void(0)" class="allToggle" data-i18n="glossary:menu.notification.title"></a>
+        </h3></td>
+      </tr>
+      <tr>
+        <td class="sidemenu-item"><h3>
+          <a onClick="cs.dispGenkikun();return false;" href="javascript:void(0)" class="allToggle" data-i18n="glossary:menu.gotoCalorieSmile.title"></a>
+        </h3></td>
+      </tr>
+    </table>
+  </div>
+  <div class="overlay" id="dvOverlay">
+  </div>
+  <div id="modal-extCellCalSmile" class="modal fade" role="dialog">
+    <div class="modal-dialog">
+      <div class="modal-content">
+        <div class="modal-header">
+          <button type="button" class="close" data-dismiss="modal">×</button>
+          <h4 class="modal-title" id="header-public" data-i18n="glossary:menu.lookAtOtherPhotos.header"></h4>
+        </div>
+        <div class="modal-body">
+          <select id="otherAllowedCells"></select>
+          <button id="bExtCalSmile" data-i18n="glossary:menu.lookAtOtherPhotos.btn"></button>
+        </div>
+        <div class="modal-footer">
+          
         </div>
       </div>
     </div>
-    <div id="modal-sendAllowedMessage" class="modal fade" role="dialog">
-      <div class="modal-dialog">
-        <div class="modal-content">
-          <div class="modal-header">
-            <button type="button" class="close" data-dismiss="modal">×</button>
-            <h4 class="modal-title" id="header-public">閲覧許可を依頼するユーザーを選択して下さい。</h4>
-          </div>
-          <div class="modal-body">
-            <select id="requestCells"></select>
-            <button id="bSendAllowed">送信</button>
-            <span class="popupAlertArea" style="color:red">
-                <aside id="popupSendAllowedErrorMsg"></aside>
-            </span>
-          </div>
-          <div class="modal-footer">
-            
-          </div>
+  </div>
+  <div id="modal-sendAllowedMessage" class="modal fade" role="dialog">
+    <div class="modal-dialog">
+      <div class="modal-content">
+        <div class="modal-header">
+          <button type="button" class="close" data-dismiss="modal">×</button>
+          <h4 class="modal-title" id="header-public" data-i18n="glossary:menu.sendReadPermissionRequest.header"></h4>
+        </div>
+        <div class="modal-body">
+          <select id="requestCells"></select>
+          <button id="bSendAllowed" data-i18n="glossary:menu.sendReadPermissionRequest.btn"></button>
+          <span class="popupAlertArea" style="color:red">
+              <aside id="popupSendAllowedErrorMsg"></aside>
+          </span>
+        </div>
+        <div class="modal-footer">
+          
         </div>
       </div>
     </div>
-    <div id="modal-listAllowed" class="modal fade" role="dialog">
-      <div class="modal-dialog">
-        <div class="modal-content">
-          <div class="modal-header">
-            <button type="button" class="close" data-dismiss="modal">×</button>
-            <h4 class="modal-title" id="header-public">閲覧を許可しているユーザー</h4>
-          </div>
-          <div class="modal-body">
-            <table id="allowedCellList">
-            </table>
-          </div>
-          <div class="modal-footer">
-            
-          </div>
+  </div>
+  <div id="modal-listAllowed" class="modal fade" role="dialog">
+    <div class="modal-dialog">
+      <div class="modal-content">
+        <div class="modal-header">
+          <button type="button" class="close" data-dismiss="modal">×</button>
+          <h4 class="modal-title" id="header-public" data-i18n="glossary:menu.readPermissionStatus.header"></h4>
+        </div>
+        <div class="modal-body">
+          <table id="allowedCellList">
+          </table>
+        </div>
+        <div class="modal-footer">
+          
         </div>
       </div>
     </div>
-    <div id="modal-receiveMessage" class="modal fade" role="dialog">
-      <div class="modal-dialog">
-        <div class="modal-content">
-          <div class="modal-header">
-            <button type="button" class="close" data-dismiss="modal">×</button>
-            <h4 class="modal-title" id="header-public">通知一覧</h4>
+  </div>
+  <div id="modal-receiveMessage" class="modal fade" role="dialog">
+    <div class="modal-dialog">
+      <div class="modal-content">
+        <div class="modal-header">
+          <button type="button" class="close" data-dismiss="modal">×</button>
+          <h4 class="modal-title" id="header-public" data-i18n="glossary:menu.notification.header"></h4>
+        </div>
+        <div class="modal-body">
+          <div class="panel-group" id="messageList">
           </div>
-          <div class="modal-body">
-            <div class="panel-group" id="messageList">
-            </div>
-          </div>
-          <div class="modal-footer">
-            
-          </div>
+        </div>
+        <div class="modal-footer">
+          
         </div>
       </div>
     </div>
-<!--
-    <div class="main_box">
-        <nav class="navbar navbar-default">
-            <div class="container">
-                <div class="navbar-header">
-                    <button type="button" class="navbar-toggle" data-toggle="collapse" data-target="#collapse-id">
-                       <span class="sr-only">Toggle navigation</span>
-                       <span class="icon-bar"></span>
-                       <span class="icon-bar"></span>
-                       <span class="icon-bar"></span>
-                       <span class="icon-bar"></span>
-                    </button>
-
-                    <a class="navbar-brand">カロリースマイル連携</a>
-                </div>
-                <div class="collapse navbar-collapse" id="collapse-id">
-                 <ul class="nav navbar-nav">
-                    <li><a data-toggle="collapse" data-parent="#accordion" href="#extCellCalSmile" class="collapsed">他の人の食事写真を見る</a></li>
-                    
-                    <li><a data-toggle="collapse" data-parent="#accordion" href="#sendAllowedMessage" class="collapsed">閲覧許可依頼送信</a></li>
-                    <li><a data-toggle="collapse" data-parent="#accordion" href="#listAllowed" class="collapsed">閲覧許可状況</a></li>
-                    <li><a data-toggle="collapse" data-parent="#accordion" href="#receiveMessage" class="collapsed">通知</a></li>
-                    <li><a data-toggle="collapse" data-parent="#accordion" href="#calorieSmile" class="collapsed">CalorieSmile</a></li>
-                 </ul>
-                </div>
-                <div class="panel-group" id="accordion">
-                    <div id="extCellCalSmile" class="panel-collapse collapse">
-                      <div class="panel-body">
-                        <h3>他の人の食事写真を見る</h3>
-                        <p>閲覧出来るユーザー</p>
-                        <select id="otherAllowedCells"></select>
-                        <button id="bExtCalSmile">閲覧</button>
-                      </div>
-                    </div>
-                    <div id="sendAllowedMessage" class="panel-collapse collapse">
-                      <div class="panel-body">
-                        <h3>閲覧許可依頼送信</h3>
-                        <p>依頼先セルURL</p>
-                        <select id="requestCells"></select>
-                        <button id="bSendAllowed">送信</button>
-                      </div>
-                      <span class="popupAlertArea" style="color:red">
-                          <aside id="popupSendAllowedErrorMsg"></aside>
-                      </span>
-                    </div>
-                    <div id="listAllowed" class="panel-collapse collapse">
-                      <div class="panel-body">
-                        <h3>閲覧許可状況</h3>
-                        <p>許可しているユーザー</p>
-                        <table id="allowedCellList">
-                        </table>
-                      </div>
-                    </div>
-                    <div id="receiveMessage" class="panel-collapse collapse">
-                      <div class="panel-body">
-                        <h3>通知</h3>
-                        <div class="panel-group" id="messageList">
-                        </div>
-                      </div>
-                    </div>
-                    <div id="calorieSmile" class="panel-collapse collapse">
-                      <div class="panel-body">
-                        <h3>CalorieSmile</h3>
-                        <div class="panel-group">
-                            <a onClick="cs.dispGenkikun();return false;">カロリースマイルへアクセス</a>
-                        </div>
-                      </div>
-                    </div>
-                </div>
-            </div>
-        </nav>
-        <div class="col-md-12 col-xs-12" align="center">
-            <div align="right">
-                <span id="MigrationGenki" class="glyphicon glyphicon-repeat glyphiconStyle" onClick="cs.getGenkikunData();return false;" style="display:none;"></span>
-            </div>
-            <div id="dispMsg" style="display:none;">
-            </div>
-            <div class="main_area" id="dvMainArea">
-                
-            </div>
-        </div>
-    </div>
--->
+  </div>
 </body>
 </html>
