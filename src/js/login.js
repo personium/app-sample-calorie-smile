@@ -70,6 +70,8 @@ cs.additionalCallback = function() {
 
     if (cs.checkParam()) {
         cs.setIdleTime();
+        cs.startLoginAnimation();
+
         cs.getGenkiAccessInfoAPI().done(function(json) {
             var loginFlag = false;
             if (json !== undefined) {
@@ -99,35 +101,21 @@ cs.additionalCallback = function() {
                 cs.loginGenki().done(function(data) {
                     cs.transGenki(data);
                 }).fail(function(data) {
-                    $('.login_area').css("display", "block");
-                    cs.displayMessageByKey("login:msg.error.failedToLogin");
+                    cs.stopLoginAnimation("login:msg.error.failedToLogin");
                 });
-            } else {
-                $('.login_area').css("display", "block");
             }
-            
-        }).fail(function(data) {
-            $('.login_area').css("display", "block");
         });
     }
+};
 
-    $('#bExtCalSmile').on('click', function () {
-        var value = $("#otherAllowedCells option:selected").val();
-        if (value == undefined || value === "") {
-            $("#popupSendAllowedErrorMsg").html(i18next.t("msg.info.pleaseSelectTargetCell"));
-        } else {
-            cs.getTargetToken(value).done(function(extData) {
-                var dispName = cs.getName(value);
-                cs.getProfile(value).done(function(data) {
-                    if (data !== null) {
-                        dispName = data.DisplayName;
-                    }
-                }).always(function() {
-                    cs.dispPhotoImage(value, extData.access_token, dispName);
-                });
-            });
-        }
-    });
+cs.startLoginAnimation = function() {
+    cs.displayMessageByKey("login:msg.info.loggingIn");
+    $("#register").prop("disabled", true);
+};
+
+cs.stopLoginAnimation = function(msg_key) {
+    cs.displayMessageByKey(msg_key);
+    $("#register").prop("disabled", false);
 };
 
 cs.getGenkiAccessInfoAPI = function() {
@@ -167,6 +155,8 @@ cs.loginGenki = function() {
 };
 
 cs.saveGenkiAccess = function() {
+    cs.startLoginAnimation();
+
     cs.loginGenki().done(function(data) {
         saveData = {
             "Url": $("#iGenkikunUrl").val(),
@@ -185,10 +175,10 @@ cs.saveGenkiAccess = function() {
         }).done(function(res) {
             cs.transGenki(data);
         }).fail(function(res) {
-            cs.displayMessageByKey("login:msg.error.failedToSaveData");
+            cs.stopLoginAnimation("login:msg.error.failedToSaveData");
         });
     }).fail(function(data) {
-        cs.displayMessageByKey("login:msg.error.failedToLogin");
+        cs.stopLoginAnimation("login:msg.error.failedToLogin");
     });
 }
 

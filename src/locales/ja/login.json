@@ -3,6 +3,9 @@
     "id": "IDを入力",
     "password": "パスワードを入力",
     "msg": {
+    	"info": {
+            "loggingIn": "ログインしています ..."
+        },
         "error": {
             "failedToLogin": "ログインに失敗しました。",
             "failedToSaveData": "保存に失敗しました。"

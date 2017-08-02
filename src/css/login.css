@@ -56,6 +56,11 @@ h1 > img {
     background-color: #44447f;
 }
 
+.login_btn:disabled {
+    background-color: #ccc;
+    border-color: #ccc;
+}
+
 .login_btn_g{
     background-color: transparent;
     border: 0 none;
