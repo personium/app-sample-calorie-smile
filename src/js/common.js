@@ -201,6 +201,7 @@ cs.getAppCellToken = function(appToken) {
 };
 
 cs.displayMessageByKey = function(msg_key) {
-    $('#dispMsg').html(i18next.t(msg_key));
-    $('#dispMsg').show();
+    $('#dispMsg').attr("data-i18n", msg_key)
+        .localize()
+        .show();
 };
