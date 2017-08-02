@@ -3,6 +3,9 @@
     "id": "Enter ID",
     "password": "Enter password",
     "msg": {
+        "info": {
+            "loggingIn": "Logging in ..."
+        },
         "error": {
             "failedToLogin": "Failed to login.",
             "failedToSaveData": "Failed to save data"
