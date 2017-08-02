@@ -99,35 +99,11 @@ cs.additionalCallback = function() {
                 cs.loginGenki().done(function(data) {
                     cs.transGenki(data);
                 }).fail(function(data) {
-                    $('.login_area').css("display", "block");
                     cs.displayMessageByKey("login:msg.error.failedToLogin");
                 });
-            } else {
-                $('.login_area').css("display", "block");
             }
-            
-        }).fail(function(data) {
-            $('.login_area').css("display", "block");
         });
     }
-
-    $('#bExtCalSmile').on('click', function () {
-        var value = $("#otherAllowedCells option:selected").val();
-        if (value == undefined || value === "") {
-            $("#popupSendAllowedErrorMsg").html(i18next.t("msg.info.pleaseSelectTargetCell"));
-        } else {
-            cs.getTargetToken(value).done(function(extData) {
-                var dispName = cs.getName(value);
-                cs.getProfile(value).done(function(data) {
-                    if (data !== null) {
-                        dispName = data.DisplayName;
-                    }
-                }).always(function() {
-                    cs.dispPhotoImage(value, extData.access_token, dispName);
-                });
-            });
-        }
-    });
 };
 
 cs.getGenkiAccessInfoAPI = function() {
