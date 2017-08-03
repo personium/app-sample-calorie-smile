@@ -70,41 +70,7 @@ cs.additionalCallback = function() {
 
     if (cs.checkParam()) {
         cs.setIdleTime();
-        cs.startLoginAnimation();
-
-        cs.getGenkiAccessInfoAPI().done(function(json) {
-            var loginFlag = false;
-            if (json !== undefined) {
-                var data = JSON.parse(json);
-                loginFlag = true;
-                var url = data.Url;
-                var id = data.Id;
-                var pass = data.Pw;
-                if (url.length > 0) {
-                    $('#iGenkikunUrl').val(url);
-                } else {
-                    loginFlag = false;
-                }
-                if (id.length > 0) {
-                    $('#iGenkikunId').val(id);
-                } else {
-                    loginFlag = false;
-                }
-                if (pass.length > 0) {
-                    $('#iGenkikunPw').val(pass);
-                } else {
-                    loginFlag = false;
-                }
-            }
-
-            if (loginFlag) {
-                cs.loginGenki().done(function(data) {
-                    cs.transGenki(data);
-                }).fail(function(data) {
-                    cs.stopLoginAnimation("login:msg.error.failedToLogin");
-                });
-            }
-        });
+        cs.getLoginInfo();
     }
 };
 
@@ -116,18 +82,6 @@ cs.startLoginAnimation = function() {
 cs.stopLoginAnimation = function(msg_key) {
     cs.displayMessageByKey(msg_key);
     $("#register").prop("disabled", false);
-};
-
-cs.getGenkiAccessInfoAPI = function() {
-    return $.ajax({
-        type: "GET",
-        url: cs.accessData.target + '/GenkiKunBox/genkiAccessInfo.json',
-        dataType: "text",
-        headers: {
-            'Authorization':'Bearer ' + cs.accessData.token,
-            'Accept':'application/text'
-        }
-    });
 };
 
 cs.loginGenki = function() {

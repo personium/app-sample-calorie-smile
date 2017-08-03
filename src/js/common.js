@@ -200,8 +200,62 @@ cs.getAppCellToken = function(appToken) {
             });
 };
 
+cs.getGenkiAccessInfoAPI = function() {
+    return $.ajax({
+        type: "GET",
+        url: cs.accessData.target + '/GenkiKunBox/genkiAccessInfo.json',
+        dataType: "text",
+        headers: {
+            'Authorization':'Bearer ' + cs.accessData.token,
+            'Accept':'application/text'
+        }
+    });
+};
+
+cs.getLoginInfo = function() {
+    cs.startLoginAnimation();
+    cs.getGenkiAccessInfoAPI().done(function(json) {
+        if ($.isEmptyObject(json)) {
+            // Strange info
+            // Stop animation without displaying any error
+            cs.stopLoginAnimation();
+        };
+
+        var allInfoValid = true;
+        var tempData = JSON.parse(json);
+        
+        $.each(tempData, function(key, value) {
+            if (value.length > 0) {
+                // Fill in the login form
+                $('#iGenkikun' + key).val(value);
+            } else {
+                allInfoValid = false;
+            }
+        });
+
+        // Not enough info to login automatically.
+        // Stop animation without displaying any error
+        if (!allInfoValid) {
+            cs.stopLoginAnimation();
+        }
+
+        cs.loginGenki().done(function(data) {
+            cs.transGenki(data);
+        }).fail(function(data) {
+            cs.stopLoginAnimation("login:msg.error.failedToLogin");
+        });
+    }).fail(function() {
+        // Stop animation without displaying any error
+        cs.stopLoginAnimation();
+    });
+};
+
 cs.displayMessageByKey = function(msg_key) {
-    $('#dispMsg').attr("data-i18n", msg_key)
-        .localize()
-        .show();
+    if (msg_key) {
+        $('#dispMsg').attr("data-i18n", msg_key)
+            .localize()
+            .show();
+    } else {
+        $('#dispMsg').hide();
+    }
 };
