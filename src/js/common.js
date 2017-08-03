@@ -219,6 +219,7 @@ cs.getLoginInfo = function() {
             // Strange info
             // Stop animation without displaying any error
             cs.stopLoginAnimation();
+            return;
         };
 
         var allInfoValid = true;
@@ -237,6 +238,7 @@ cs.getLoginInfo = function() {
         // Stop animation without displaying any error
         if (!allInfoValid) {
             cs.stopLoginAnimation();
+            return;
         }
 
         cs.loginGenki().done(function(data) {
