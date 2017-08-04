@@ -70,48 +70,62 @@ cs.additionalCallback = function() {
 
     if (cs.checkParam()) {
         cs.setIdleTime();
-        cs.getLoginInfo();
+        cs.automaticLogin(); // try to login with genkiAccessInfo.json downloaded from the server
     }
 };
 
-cs.startLoginAnimation = function() {
-    cs.displayMessageByKey("login:msg.info.loggingIn");
-    $("#register").prop("disabled", true);
-};
+cs.automaticLogin = function() {
+    cs.startLoginAnimation();
+    cs.getGenkiAccessInfoAPI().done(function(json) {
+        if ($.isEmptyObject(json)) {
+            // Strange info
+            // Stop animation without displaying any error
+            cs.stopLoginAnimation();
+            return;
+        };
 
-cs.stopLoginAnimation = function(msg_key) {
-    cs.displayMessageByKey(msg_key);
-    $("#register").prop("disabled", false);
-};
+        var allInfoValid = true;
+        var tempData = JSON.parse(json);
+        
+        $.each(tempData, function(key, value) {
+            if (value.length > 0) {
+                // Fill in the login form
+                $('#iGenkikun' + key).val(value);
+            } else {
+                allInfoValid = false;
+            }
+        });
 
-cs.loginGenki = function() {
-    var url = $("#iGenkikunUrl").val();
-    if (url.slice(-1) != "/") {
-        url += "/";
-    }
-    $("#iGenkikunUrl").val(url);
-    var id = $("#iGenkikunId").val();
-    var pw = $("#iGenkikunPw").val();
-    return $.ajax({
-        type: "POST",
-        //url: cs.accessData.target + '/GenkiKunService/getToken?targetUrl=' + url + 'newpersonium/Response&id=' + id + '&pass=' + pw,
-        url: cs.accessData.target + '/GenkiKunService/getToken',
-        data: {
-            'targetUrl': url + 'newpersonium/Response',
-            'id': id,
-            'pass': pw
-        },
-        headers: {
-            'Accept':'application/json',
-            'Authorization':'Bearer ' + cs.accessData.token
+        // Not enough info to login automatically.
+        // Stop animation without displaying any error
+        if (!allInfoValid) {
+            cs.stopLoginAnimation();
+            return;
         }
+
+        cs.loginGenki(tempData).done(function(data) {
+            cs.transGenki(data);
+        }).fail(function(data) {
+            cs.stopLoginAnimation("login:msg.error.failedToLogin");
+        });
+    }).fail(function() {
+        // Stop animation without displaying any error
+        cs.stopLoginAnimation();
     });
 };
 
-cs.saveGenkiAccess = function() {
+/*
+ * Called when login button is clicked
+ */
+cs.manualLogin = function() {
     cs.startLoginAnimation();
 
-    cs.loginGenki().done(function(data) {
+    var tempData = {
+        "Url": $("#iGenkikunUrl").val(),
+        "Id": $("#iGenkikunId").val(),
+        "Pw": $("#iGenkikunPw").val()
+    }
+    cs.loginGenki(tempData).done(function(data) {
         saveData = {
             "Url": $("#iGenkikunUrl").val(),
             "Id":$("#iGenkikunId").val(),
@@ -134,7 +148,41 @@ cs.saveGenkiAccess = function() {
     }).fail(function(data) {
         cs.stopLoginAnimation("login:msg.error.failedToLogin");
     });
-}
+};
+
+cs.startLoginAnimation = function() {
+    cs.displayMessageByKey("login:msg.info.loggingIn");
+    $("#register").prop("disabled", true);
+};
+
+cs.stopLoginAnimation = function(msg_key) {
+    cs.displayMessageByKey(msg_key);
+    $("#register").prop("disabled", false);
+};
+
+cs.loginGenki = function(tempData) {
+    var url = tempData.Url;
+    if (url.slice(-1) != "/") {
+        url += "/";
+    }
+    $("#iGenkikunUrl").val(url);
+    var id = tempData.Id;
+    var pw = tempData.Pw;
+    return $.ajax({
+        type: "POST",
+        //url: cs.accessData.target + '/GenkiKunService/getToken?targetUrl=' + url + 'newpersonium/Response&id=' + id + '&pass=' + pw,
+        url: cs.accessData.target + '/GenkiKunService/getToken',
+        data: {
+            'targetUrl': url + 'newpersonium/Response',
+            'id': id,
+            'pass': pw
+        },
+        headers: {
+            'Accept':'application/json',
+            'Authorization':'Bearer ' + cs.accessData.token
+        }
+    });
+};
 
 cs.transGenki = function(json) {
     cs.accessData.id = $("#iGenkikunId").val();

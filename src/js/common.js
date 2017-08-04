@@ -155,11 +155,7 @@ cs.refreshToken = function() {
     cs.getAppToken().done(function(appToken) {
         cs.getAppCellToken(appToken.access_token).done(function(appCellToken) {
             // update sessionStorage
-            cs.accessData.token = appCellToken.access_token;
-            cs.accessData.refToken = appCellToken.refresh_token;
-            cs.accessData.expires = appCellToken.expires_in;
-            cs.accessData.refExpires = appCellToken.refresh_token_expires_in;
-            sessionStorage.setItem("accessInfo", JSON.stringify(cs.accessData));
+            cs.updateSessionStorage(appCellToken);
         }).fail(function(appCellToken) {
             cs.displayMessageByKey("msg.error.failedToRefreshToken");
         });
@@ -200,6 +196,14 @@ cs.getAppCellToken = function(appToken) {
             });
 };
 
+cs.updateSessionStorage = function(appCellToken) {
+    cs.accessData.token = appCellToken.access_token;
+    cs.accessData.refToken = appCellToken.refresh_token;
+    cs.accessData.expires = appCellToken.expires_in;
+    cs.accessData.refExpires = appCellToken.refresh_token_expires_in;
+    sessionStorage.setItem("accessInfo", JSON.stringify(cs.accessData));
+};
+
 cs.getGenkiAccessInfoAPI = function() {
     return $.ajax({
         type: "GET",
@@ -209,46 +213,6 @@ cs.getGenkiAccessInfoAPI = function() {
             'Authorization':'Bearer ' + cs.accessData.token,
             'Accept':'application/text'
         }
-    });
-};
-
-cs.getLoginInfo = function() {
-    cs.startLoginAnimation();
-    cs.getGenkiAccessInfoAPI().done(function(json) {
-        if ($.isEmptyObject(json)) {
-            // Strange info
-            // Stop animation without displaying any error
-            cs.stopLoginAnimation();
-            return;
-        };
-
-        var allInfoValid = true;
-        var tempData = JSON.parse(json);
-        
-        $.each(tempData, function(key, value) {
-            if (value.length > 0) {
-                // Fill in the login form
-                $('#iGenkikun' + key).val(value);
-            } else {
-                allInfoValid = false;
-            }
-        });
-
-        // Not enough info to login automatically.
-        // Stop animation without displaying any error
-        if (!allInfoValid) {
-            cs.stopLoginAnimation();
-            return;
-        }
-
-        cs.loginGenki().done(function(data) {
-            cs.transGenki(data);
-        }).fail(function(data) {
-            cs.stopLoginAnimation("login:msg.error.failedToLogin");
-        });
-    }).fail(function() {
-        // Stop animation without displaying any error
-        cs.stopLoginAnimation();
     });
 };
 
