@@ -204,6 +204,14 @@ cs.updateSessionStorage = function(appCellToken) {
     sessionStorage.setItem("accessInfo", JSON.stringify(cs.accessData));
 };
 
+cs.updateSessionStorageGenkikun = function(json, loginData) {
+    cs.accessData.id = loginData.Id;
+    cs.accessData.genkiUrl = loginData.Url;
+    cs.accessData.genkiToken = json.access_token;
+    cs.accessData.genkiexpires = json.expires_in;
+    sessionStorage.setItem("accessInfo", JSON.stringify(cs.accessData));
+};
+
 cs.getCalorieSmileServerToken = function(startAnimation, stopAnimation, loginSucceedCallback) {
     if ($.isFunction(startAnimation)) {
         startAnimation();
@@ -224,7 +232,7 @@ cs.getCalorieSmileServerToken = function(startAnimation, stopAnimation, loginSuc
         $.each(tempData, function(key, value) {
             if (value.length > 0) {
                 // Fill in the login form
-                cs.updateGenkikunFormData(key, value);
+                tempData[key] = cs.updateGenkikunFormData(key, value);
             } else {
                 allInfoValid = false;
             }
@@ -241,7 +249,7 @@ cs.getCalorieSmileServerToken = function(startAnimation, stopAnimation, loginSuc
 
         cs.loginGenki(tempData).done(function(data) {
             if ($.isFunction(loginSucceedCallback)) {
-                loginSucceedCallback(data);
+                loginSucceedCallback(data, tempData);
             }
         }).fail(function(data) {
             if ($.isFunction(stopAnimation)) {
@@ -297,10 +305,20 @@ cs.loginGenki = function(tempData) {
 
 cs.updateGenkikunFormData = function(key, value) {
     var tempValue = value;
-    if ((key == "Url") && (value.slice(-1) != "/")) {
-        tempValue += "/";
+    if (key == "Url") {
+        tempValue = cs.addEndingSlash(value);
     }
     $('#iGenkikun' + key).val(tempValue);
+    return tempValue;
+};
+
+cs.addEndingSlash = function(url) {
+    var tempValue = url;
+    if (url.slice(-1) != "/") {
+        tempValue += "/";
+    }
+
+    return tempValue;
 };
 
 cs.displayMessageByKey = function(msg_key) {

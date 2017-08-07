@@ -86,7 +86,7 @@ cs.manualLogin = function() {
     startLoginAnimation();
 
     var tempData = {
-        "Url": $("#iGenkikunUrl").val(),
+        "Url": cs.addEndingSlash($("#iGenkikunUrl").val()),
         "Id": $("#iGenkikunId").val(),
         "Pw": $("#iGenkikunPw").val()
     }
@@ -101,7 +101,7 @@ cs.manualLogin = function() {
                 'Accept':'application/json'
             }
         }).done(function(res) {
-            saveAccessDataAndRenderGenki(data);
+            saveAccessDataAndRenderGenki(data, tempData);
         }).fail(function(res) {
             stopLoginAnimation("login:msg.error.failedToSaveData");
         });
@@ -120,12 +120,7 @@ stopLoginAnimation = function(msg_key) {
     $("#register").prop("disabled", false);
 };
 
-saveAccessDataAndRenderGenki = function(json) {
-    cs.accessData.id = $("#iGenkikunId").val();
-    cs.accessData.genkiUrl = $("#iGenkikunUrl").val();
-    cs.accessData.genkiToken = json.access_token;
-    cs.accessData.genkiexpires = json.expires_in;
-    sessionStorage.setItem("accessInfo", JSON.stringify(cs.accessData));
-
+saveAccessDataAndRenderGenki = function(json, loginData) {
+    cs.updateSessionStorageGenkikun(json, loginData);
     location.href = "./genki.html";
 };
