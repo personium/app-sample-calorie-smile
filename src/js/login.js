@@ -70,55 +70,20 @@ cs.additionalCallback = function() {
 
     if (cs.checkParam()) {
         cs.setIdleTime();
-        cs.automaticLogin(); // try to login with genkiAccessInfo.json downloaded from the server
+        // try to login with genkiAccessInfo.json downloaded from the server
+        cs.automaticLogin();
     }
 };
 
 cs.automaticLogin = function() {
-    cs.startLoginAnimation();
-    cs.getGenkiAccessInfoAPI().done(function(json) {
-        if ($.isEmptyObject(json)) {
-            // Strange info
-            // Stop animation without displaying any error
-            cs.stopLoginAnimation();
-            return;
-        };
-
-        var allInfoValid = true;
-        var tempData = JSON.parse(json);
-        
-        $.each(tempData, function(key, value) {
-            if (value.length > 0) {
-                // Fill in the login form
-                $('#iGenkikun' + key).val(value);
-            } else {
-                allInfoValid = false;
-            }
-        });
-
-        // Not enough info to login automatically.
-        // Stop animation without displaying any error
-        if (!allInfoValid) {
-            cs.stopLoginAnimation();
-            return;
-        }
-
-        cs.loginGenki(tempData).done(function(data) {
-            cs.transGenki(data);
-        }).fail(function(data) {
-            cs.stopLoginAnimation("login:msg.error.failedToLogin");
-        });
-    }).fail(function() {
-        // Stop animation without displaying any error
-        cs.stopLoginAnimation();
-    });
+    cs.getCalorieSmileServerToken(startLoginAnimation, stopLoginAnimation, saveAccessDataAndRenderGenki);
 };
 
 /*
  * Called when login button is clicked
  */
 cs.manualLogin = function() {
-    cs.startLoginAnimation();
+    startLoginAnimation();
 
     var tempData = {
         "Url": $("#iGenkikunUrl").val(),
@@ -126,65 +91,36 @@ cs.manualLogin = function() {
         "Pw": $("#iGenkikunPw").val()
     }
     cs.loginGenki(tempData).done(function(data) {
-        saveData = {
-            "Url": $("#iGenkikunUrl").val(),
-            "Id":$("#iGenkikunId").val(),
-            "Pw":$("#iGenkikunPw").val()
-        };
         $.ajax({
             type: "PUT",
             url: cs.accessData.target + '/GenkiKunBox/genkiAccessInfo.json',
-            data: JSON.stringify(saveData),
+            data: JSON.stringify(tempData),
             dataType: 'json',
             headers: {
                 'Authorization':'Bearer ' + cs.accessData.token,
                 'Accept':'application/json'
             }
         }).done(function(res) {
-            cs.transGenki(data);
+            saveAccessDataAndRenderGenki(data);
         }).fail(function(res) {
-            cs.stopLoginAnimation("login:msg.error.failedToSaveData");
+            stopLoginAnimation("login:msg.error.failedToSaveData");
         });
     }).fail(function(data) {
-        cs.stopLoginAnimation("login:msg.error.failedToLogin");
+        stopLoginAnimation("login:msg.error.failedToLogin");
     });
 };
 
-cs.startLoginAnimation = function() {
+startLoginAnimation = function() {
     cs.displayMessageByKey("login:msg.info.loggingIn");
     $("#register").prop("disabled", true);
 };
 
-cs.stopLoginAnimation = function(msg_key) {
+stopLoginAnimation = function(msg_key) {
     cs.displayMessageByKey(msg_key);
     $("#register").prop("disabled", false);
 };
 
-cs.loginGenki = function(tempData) {
-    var url = tempData.Url;
-    if (url.slice(-1) != "/") {
-        url += "/";
-    }
-    $("#iGenkikunUrl").val(url);
-    var id = tempData.Id;
-    var pw = tempData.Pw;
-    return $.ajax({
-        type: "POST",
-        //url: cs.accessData.target + '/GenkiKunService/getToken?targetUrl=' + url + 'newpersonium/Response&id=' + id + '&pass=' + pw,
-        url: cs.accessData.target + '/GenkiKunService/getToken',
-        data: {
-            'targetUrl': url + 'newpersonium/Response',
-            'id': id,
-            'pass': pw
-        },
-        headers: {
-            'Accept':'application/json',
-            'Authorization':'Bearer ' + cs.accessData.token
-        }
-    });
-};
-
-cs.transGenki = function(json) {
+saveAccessDataAndRenderGenki = function(json) {
     cs.accessData.id = $("#iGenkikunId").val();
     cs.accessData.genkiUrl = $("#iGenkikunUrl").val();
     cs.accessData.genkiToken = json.access_token;

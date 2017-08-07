@@ -204,6 +204,65 @@ cs.updateSessionStorage = function(appCellToken) {
     sessionStorage.setItem("accessInfo", JSON.stringify(cs.accessData));
 };
 
+cs.getCalorieSmileServerToken = function(startAnimation, stopAnimation, loginSucceedCallback) {
+    if ($.isFunction(startAnimation)) {
+        startAnimation();
+    }
+    cs.getGenkiAccessInfoAPI().done(function(json) {
+        if ($.isEmptyObject(json)) {
+            // Strange info
+            // Stop animation without displaying any error
+            if ($.isFunction(stopAnimation)) {
+                stopAnimation();
+            }
+            return;
+        };
+
+        var allInfoValid = true;
+        var tempData = JSON.parse(json);
+        
+        $.each(tempData, function(key, value) {
+            if (value.length > 0) {
+                // Fill in the login form
+                cs.updateGenkikunFormData(key, value);
+            } else {
+                allInfoValid = false;
+            }
+        });
+
+        // Not enough info to login automatically.
+        // Stop animation without displaying any error
+        if (!allInfoValid) {
+            if ($.isFunction(stopAnimation)) {
+                stopAnimation();
+            }
+            return;
+        }
+
+        cs.loginGenki(tempData).done(function(data) {
+            if ($.isFunction(loginSucceedCallback)) {
+                loginSucceedCallback(data);
+            }
+        }).fail(function(data) {
+            if ($.isFunction(stopAnimation)) {
+                stopAnimation("login:msg.error.failedToLogin");
+            }
+        });
+    }).fail(function() {
+        // Stop animation without displaying any error
+        if ($.isFunction(stopAnimation)) {
+            stopAnimation();
+        }
+    });
+};
+
+/*
+ * Get login information (Url/Id/Pw) from user's cell
+ * to avoid saving data in local storage.
+ * Url: Calorie Smile server's URL
+ * Id:  User ID
+ * Pw:  User password
+ */
 cs.getGenkiAccessInfoAPI = function() {
     return $.ajax({
         type: "GET",
@@ -214,6 +273,34 @@ cs.getGenkiAccessInfoAPI = function() {
             'Accept':'application/text'
         }
     });
+};
+
+cs.loginGenki = function(tempData) {
+    var url = tempData.Url;
+    var id = tempData.Id;
+    var pw = tempData.Pw;
+    return $.ajax({
+        type: "POST",
+        //url: cs.accessData.target + '/GenkiKunService/getToken?targetUrl=' + url + 'newpersonium/Response&id=' + id + '&pass=' + pw,
+        url: cs.accessData.target + '/GenkiKunService/getToken',
+        data: {
+            'targetUrl': url + 'newpersonium/Response',
+            'id': id,
+            'pass': pw
+        },
+        headers: {
+            'Accept':'application/json',
+            'Authorization':'Bearer ' + cs.accessData.token
+        }
+    });
+};
+
+cs.updateGenkikunFormData = function(key, value) {
+    var tempValue = value;
+    if ((key == "Url") && (value.slice(-1) != "/")) {
+        tempValue += "/";
+    }
+    $('#iGenkikun' + key).val(tempValue);
 };
 
 cs.displayMessageByKey = function(msg_key) {
