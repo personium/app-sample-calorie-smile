@@ -162,7 +162,7 @@ cs.getGenkikunData = function() {
     cs.startAnimation();
     cs.displayMessageByKey("msg.info.collaboratingData");
 
-    cs.getCalorieSmileServerToken(null, null, refreshGenkikunToken);
+    cs.getCalorieSmileServerToken(null, null, cs.refreshGenkikunToken);
 
     $.when(
         cs.getJissekiLatestDateAPI(),
@@ -215,7 +215,9 @@ cs.stopAnimation = function() {
 };
 cs.refreshGenkikunToken = function(json, loginData) {
     cs.updateSessionStorageGenkikun(json, loginData);
-    d1.resolve();
+    if (d1 && d1.state() == "pending") {
+        d1.resolve();
+    }
 };
 //cs.updateGenkikunData = function(result) {
 cs.updateGenkikunData = function(resultJ, resultS, resultSh) {
