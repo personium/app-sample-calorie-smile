@@ -162,7 +162,7 @@ cs.getGenkikunData = function() {
     cs.startAnimation();
     cs.displayMessageByKey("msg.info.collaboratingData");
 
-    cs.getCalorieSmileServerToken(null, null, cs.refreshGenkikunToken);
+    cs.updateCSToken();
 
     $.when(
         cs.getJissekiLatestDateAPI(),
@@ -212,6 +212,15 @@ cs.stopAnimation = function() {
     $('#updateGenki')
         .prop('disabled', false)
         .removeClass("spinIcon");
+};
+/*
+ * called by either of the followings:
+ * 0. cs.transGenki -> cs.getGenkikunData during initialization
+ * 1. cs.refreshToken to automatically refresh Calorie Smile server token
+ * 2. cs.getGenkikunData when refresh button is clicked
+ */
+cs.updateCSToken = function() {
+    cs.getCalorieSmileServerToken(null, null, cs.refreshGenkikunToken);
 };
 cs.refreshGenkikunToken = function(json, loginData) {
     cs.updateSessionStorageGenkikun(json, loginData);
