@@ -283,6 +283,9 @@ cs.getGenkiAccessInfoAPI = function() {
     });
 };
 
+/*
+ * login and receive the server's tokan
+ */
 cs.loginGenki = function(tempData) {
     var url = tempData.Url;
     var id = tempData.Id;

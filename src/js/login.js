@@ -32,13 +32,13 @@ $(document).ready(function() {
         initJqueryI18next();
         
         cs.appendSessionExpiredDialog();
-        cs.additionalCallback();
+        additionalCallback();
         
         updateContent();
     });
 });
 
-cs.additionalCallback = function() {
+additionalCallback = function() {
     var hash = location.hash.substring(1);
     var params = hash.split("&");
     for (var i in params) {
@@ -71,18 +71,24 @@ cs.additionalCallback = function() {
     if (cs.checkParam()) {
         cs.setIdleTime();
         // try to login with genkiAccessInfo.json downloaded from the server
-        cs.automaticLogin();
+        automaticLogin();
     }
 };
 
-cs.automaticLogin = function() {
+/*
+ * Peform the followings:
+ * 1. retrieve login info (Calorie Smile server) from user's cell
+ * 2. login to Calorie Smile server and receive a token
+ * 3. save the token to session storage so that genki.html can use it
+ */
+automaticLogin = function() {
     cs.getCalorieSmileServerToken(startLoginAnimation, stopLoginAnimation, saveAccessDataAndRenderGenki);
 };
 
 /*
  * Called when login button is clicked
  */
-cs.manualLogin = function() {
+manualLogin = function() {
     startLoginAnimation();
 
     var tempData = {

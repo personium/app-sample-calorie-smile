@@ -184,9 +184,9 @@ cs.getGenkikunData = function() {
             prevDateSh = prevDateSh.replace(/\/|\-/g, "");
         }
         $.when(
-            cs.getDataAPI(prevDateJ),
-            cs.getDataAPI(prevDateS),
-            cs.getDataAPI(prevDateSh)
+            cs.getDataAPI(prevDateJ), // need valid genkiToken
+            cs.getDataAPI(prevDateS), // need valid genkiToken
+            cs.getDataAPI(prevDateSh) // need valid genkiToken
         ).done(function(resultJ, resultS, resultSh) {
             cs.updateGenkikunData(resultJ, resultS, resultSh);
         }).fail(function(result) {
@@ -199,12 +199,14 @@ cs.getGenkikunData = function() {
     });
 };
 cs.startAnimation = function() {
-    $('#MigrationGenki').prop('disabled', true);
-    $('#MigrationGenki').addClass("spinIcon");
+    $('#updateGenki')
+        .prop('disabled', true)
+        .addClass("spinIcon");
 };
 cs.stopAnimation = function() {
-    $('#MigrationGenki').prop('disabled', false);
-    $('#MigrationGenki').removeClass("spinIcon");
+    $('#updateGenki')
+        .prop('disabled', false)
+        .removeClass("spinIcon");
 };
 //cs.updateGenkikunData = function(result) {
 cs.updateGenkikunData = function(resultJ, resultS, resultSh) {
