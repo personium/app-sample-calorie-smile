@@ -156,14 +156,19 @@ cs.dispGenkikun = function() {
     childWindow = null;
 };
 
+var d1 = null;
 cs.getGenkikunData = function() {
+    d1 = $.Deferred();
     cs.startAnimation();
     cs.displayMessageByKey("msg.info.collaboratingData");
+
+    cs.getCalorieSmileServerToken(null, null, refreshGenkikunToken);
 
     $.when(
         cs.getJissekiLatestDateAPI(),
         cs.getSokuteiLatestDateAPI(),
-        cs.getShokujiLatestDateAPI()
+        cs.getShokujiLatestDateAPI(),
+        d1
     ).done(function(dataJ,dataS,dataSh) {
         var prevDateJ = "";
         var prevDateS = "";
@@ -207,6 +212,10 @@ cs.stopAnimation = function() {
     $('#updateGenki')
         .prop('disabled', false)
         .removeClass("spinIcon");
+};
+cs.refreshGenkikunToken = function(json, loginData) {
+    cs.updateSessionStorageGenkikun(json, loginData);
+    d1.resolve();
 };
 //cs.updateGenkikunData = function(result) {
 cs.updateGenkikunData = function(resultJ, resultS, resultSh) {
