@@ -156,9 +156,6 @@ cs.refreshToken = function() {
         cs.getAppCellToken(appToken.access_token).done(function(appCellToken) {
             // update sessionStorage
             cs.updateSessionStorage(appCellToken);
-            if ($.isFunction(cs.updateCSToken)) {
-                cs.updateCSToken();
-            }
         }).fail(function(appCellToken) {
             cs.displayMessageByKey("msg.error.failedToRefreshToken");
         });
