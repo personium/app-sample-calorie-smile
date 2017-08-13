@@ -32,13 +32,13 @@ $(document).ready(function() {
         initJqueryI18next();
         
         cs.appendSessionExpiredDialog();
-        cs.additionalCallback();
+        additionalCallback();
         
         updateContent();
     });
 });
 
-cs.additionalCallback = function() {
+additionalCallback = function() {
     var hash = location.hash.substring(1);
     var params = hash.split("&");
     for (var i in params) {
@@ -70,78 +70,63 @@ cs.additionalCallback = function() {
 
     if (cs.checkParam()) {
         cs.setIdleTime();
-        cs.getLoginInfo();
+        // try to login with genkiAccessInfo.json downloaded from the server
+        automaticLogin();
     }
 };
 
-cs.startLoginAnimation = function() {
-    cs.displayMessageByKey("login:msg.info.loggingIn");
-    $("#register").prop("disabled", true);
+/*
+ * Peform the followings:
+ * 1. retrieve login info (Calorie Smile server) from user's cell
+ * 2. login to Calorie Smile server and receive a token
+ * 3. save the token to session storage so that genki.html can use it
+ */
+automaticLogin = function() {
+    cs.getCalorieSmileServerToken(startLoginAnimation, stopLoginAnimation, saveAccessDataAndRenderGenki);
 };
 
-cs.stopLoginAnimation = function(msg_key) {
-    cs.displayMessageByKey(msg_key);
-    $("#register").prop("disabled", false);
-};
+/*
+ * Called when login button is clicked
+ */
+manualLogin = function() {
+    startLoginAnimation();
 
-cs.loginGenki = function() {
-    var url = $("#iGenkikunUrl").val();
-    if (url.slice(-1) != "/") {
-        url += "/";
+    var tempData = {
+        "Url": cs.addEndingSlash($("#iGenkikunUrl").val()),
+        "Id": $("#iGenkikunId").val(),
+        "Pw": $("#iGenkikunPw").val()
     }
-    $("#iGenkikunUrl").val(url);
-    var id = $("#iGenkikunId").val();
-    var pw = $("#iGenkikunPw").val();
-    return $.ajax({
-        type: "POST",
-        //url: cs.accessData.target + '/GenkiKunService/getToken?targetUrl=' + url + 'newpersonium/Response&id=' + id + '&pass=' + pw,
-        url: cs.accessData.target + '/GenkiKunService/getToken',
-        data: {
-            'targetUrl': url + 'newpersonium/Response',
-            'id': id,
-            'pass': pw
-        },
-        headers: {
-            'Accept':'application/json',
-            'Authorization':'Bearer ' + cs.accessData.token
-        }
-    });
-};
-
-cs.saveGenkiAccess = function() {
-    cs.startLoginAnimation();
-
-    cs.loginGenki().done(function(data) {
-        saveData = {
-            "Url": $("#iGenkikunUrl").val(),
-            "Id":$("#iGenkikunId").val(),
-            "Pw":$("#iGenkikunPw").val()
-        };
+    cs.loginGenki(tempData).done(function(data) {
         $.ajax({
             type: "PUT",
             url: cs.accessData.target + '/GenkiKunBox/genkiAccessInfo.json',
-            data: JSON.stringify(saveData),
+            data: JSON.stringify(tempData),
             dataType: 'json',
             headers: {
                 'Authorization':'Bearer ' + cs.accessData.token,
                 'Accept':'application/json'
             }
         }).done(function(res) {
-            cs.transGenki(data);
+            saveAccessDataAndRenderGenki(data, tempData);
         }).fail(function(res) {
-            cs.stopLoginAnimation("login:msg.error.failedToSaveData");
+            stopLoginAnimation("login:msg.error.failedToSaveData");
         });
     }).fail(function(data) {
-        cs.stopLoginAnimation("login:msg.error.failedToLogin");
+        stopLoginAnimation("login:msg.error.failedToLogin");
     });
-}
+};
 
-cs.transGenki = function(json) {
-    cs.accessData.id = $("#iGenkikunId").val();
-    cs.accessData.genkiUrl = $("#iGenkikunUrl").val();
-    cs.accessData.genkiToken = json.access_token;
-    cs.accessData.genkiexpires = json.expires_in;
-    sessionStorage.setItem("accessInfo", JSON.stringify(cs.accessData));
+startLoginAnimation = function() {
+    cs.displayMessageByKey("login:msg.info.loggingIn");
+    $("#register").prop("disabled", true);
+};
 
+stopLoginAnimation = function(msg_key) {
+    cs.displayMessageByKey(msg_key);
+    $("#register").prop("disabled", false);
+};
+
+saveAccessDataAndRenderGenki = function(json, loginData) {
+    cs.updateSessionStorageGenkikun(json, loginData);
     location.href = "./genki.html";
 };

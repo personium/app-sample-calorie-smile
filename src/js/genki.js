@@ -156,14 +156,19 @@ cs.dispGenkikun = function() {
     childWindow = null;
 };
 
+var d1 = null;
 cs.getGenkikunData = function() {
+    d1 = $.Deferred();
     cs.startAnimation();
     cs.displayMessageByKey("msg.info.collaboratingData");
+
+    cs.updateCSToken();
 
     $.when(
         cs.getJissekiLatestDateAPI(),
         cs.getSokuteiLatestDateAPI(),
-        cs.getShokujiLatestDateAPI()
+        cs.getShokujiLatestDateAPI(),
+        d1
     ).done(function(dataJ,dataS,dataSh) {
         var prevDateJ = "";
         var prevDateS = "";
@@ -184,9 +189,9 @@ cs.getGenkikunData = function() {
             prevDateSh = prevDateSh.replace(/\/|\-/g, "");
         }
         $.when(
-            cs.getDataAPI(prevDateJ),
-            cs.getDataAPI(prevDateS),
-            cs.getDataAPI(prevDateSh)
+            cs.getDataAPI(prevDateJ), // need valid genkiToken
+            cs.getDataAPI(prevDateS), // need valid genkiToken
+            cs.getDataAPI(prevDateSh) // need valid genkiToken
         ).done(function(resultJ, resultS, resultSh) {
             cs.updateGenkikunData(resultJ, resultS, resultSh);
         }).fail(function(result) {
@@ -199,12 +204,29 @@ cs.getGenkikunData = function() {
     });
 };
 cs.startAnimation = function() {
-    $('#MigrationGenki').prop('disabled', true);
-    $('#MigrationGenki').addClass("spinIcon");
+    $('#updateGenki')
+        .prop('disabled', true)
+        .addClass("spinIcon");
 };
 cs.stopAnimation = function() {
-    $('#MigrationGenki').prop('disabled', false);
-    $('#MigrationGenki').removeClass("spinIcon");
+    $('#updateGenki')
+        .prop('disabled', false)
+        .removeClass("spinIcon");
+};
+/*
+ * called by either of the followings:
+ * 0. cs.transGenki -> cs.getGenkikunData during initialization
+ * 1. cs.refreshToken to automatically refresh Calorie Smile server token
+ * 2. cs.getGenkikunData when refresh button is clicked
+ */
+cs.updateCSToken = function() {
+    cs.getCalorieSmileServerToken(null, null, cs.refreshGenkikunToken);
+};
+cs.refreshGenkikunToken = function(json, loginData) {
+    cs.updateSessionStorageGenkikun(json, loginData);
+    if (d1 && d1.state() == "pending") {
+        d1.resolve();
+    }
 };
 //cs.updateGenkikunData = function(result) {
 cs.updateGenkikunData = function(resultJ, resultS, resultSh) {

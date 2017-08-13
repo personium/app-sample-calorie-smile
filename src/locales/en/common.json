@@ -13,7 +13,7 @@
     "me": "Me",
     "msg": {
         "info": {
-            "collaboratingData": "Collaborating data ...",
+            "collaboratingData": "Synchronizing data ...",
             "pleaseSelectTargetCell": "Please select a cell.",
             "messageSent": "Succeeded in sending the message."
         },

@@ -1,7 +1,7 @@
 {
     "title": "Calorie Smile",
-    "link": "Link",
-    "calorieSmileCollaboration": "Calorie Smile Collaboration",
+    "link": "Sync",
+    "calorieSmileCollaboration": "Calorie Smile",
     "linkBtn": "$t(glossary:link) data",
     "photosOfMeals": "Photos of Meals",
     "food": "food",

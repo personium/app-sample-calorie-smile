@@ -155,11 +155,7 @@ cs.refreshToken = function() {
     cs.getAppToken().done(function(appToken) {
         cs.getAppCellToken(appToken.access_token).done(function(appCellToken) {
             // update sessionStorage
-            cs.accessData.token = appCellToken.access_token;
-            cs.accessData.refToken = appCellToken.refresh_token;
-            cs.accessData.expires = appCellToken.expires_in;
-            cs.accessData.refExpires = appCellToken.refresh_token_expires_in;
-            sessionStorage.setItem("accessInfo", JSON.stringify(cs.accessData));
+            cs.updateSessionStorage(appCellToken);
         }).fail(function(appCellToken) {
             cs.displayMessageByKey("msg.error.failedToRefreshToken");
         });
@@ -200,6 +196,81 @@ cs.getAppCellToken = function(appToken) {
             });
 };
 
+cs.updateSessionStorage = function(appCellToken) {
+    cs.accessData.token = appCellToken.access_token;
+    cs.accessData.refToken = appCellToken.refresh_token;
+    cs.accessData.expires = appCellToken.expires_in;
+    cs.accessData.refExpires = appCellToken.refresh_token_expires_in;
+    sessionStorage.setItem("accessInfo", JSON.stringify(cs.accessData));
+};
+
+cs.updateSessionStorageGenkikun = function(json, loginData) {
+    cs.accessData.id = loginData.Id;
+    cs.accessData.genkiUrl = loginData.Url;
+    cs.accessData.genkiToken = json.access_token;
+    cs.accessData.genkiexpires = json.expires_in;
+    sessionStorage.setItem("accessInfo", JSON.stringify(cs.accessData));
+};
+
+cs.getCalorieSmileServerToken = function(startAnimation, stopAnimation, loginSucceedCallback) {
+    if ($.isFunction(startAnimation)) {
+        startAnimation();
+    }
+    cs.getGenkiAccessInfoAPI().done(function(json) {
+        if ($.isEmptyObject(json)) {
+            // Strange info
+            // Stop animation without displaying any error
+            if ($.isFunction(stopAnimation)) {
+                stopAnimation();
+            }
+            return;
+        };
+
+        var allInfoValid = true;
+        var tempData = JSON.parse(json);
+        
+        $.each(tempData, function(key, value) {
+            if (value.length > 0) {
+                // Fill in the login form
+                tempData[key] = cs.updateGenkikunFormData(key, value);
+            } else {
+                allInfoValid = false;
+            }
+        });
+
+        // Not enough info to login automatically.
+        // Stop animation without displaying any error
+        if (!allInfoValid) {
+            if ($.isFunction(stopAnimation)) {
+                stopAnimation();
+            }
+            return;
+        }
+
+        cs.loginGenki(tempData).done(function(data) {
+            if ($.isFunction(loginSucceedCallback)) {
+                loginSucceedCallback(data, tempData);
+            }
+        }).fail(function(data) {
+            if ($.isFunction(stopAnimation)) {
+                stopAnimation("login:msg.error.failedToLogin");
+            }
+        });
+    }).fail(function() {
+        // Stop animation without displaying any error
+        if ($.isFunction(stopAnimation)) {
+            stopAnimation();
+        }
+    });
+};
+
+/*
+ * Get login information (Url/Id/Pw) from user's cell
+ * to avoid saving data in local storage.
+ * Url: Calorie Smile server's URL
+ * Id:  User ID
+ * Pw:  User password
+ */
 cs.getGenkiAccessInfoAPI = function() {
     return $.ajax({
         type: "GET",
@@ -212,44 +283,45 @@ cs.getGenkiAccessInfoAPI = function() {
     });
 };
 
-cs.getLoginInfo = function() {
-    cs.startLoginAnimation();
-    cs.getGenkiAccessInfoAPI().done(function(json) {
-        if ($.isEmptyObject(json)) {
-            // Strange info
-            // Stop animation without displaying any error
-            cs.stopLoginAnimation();
-            return;
-        };
-
-        var allInfoValid = true;
-        var tempData = JSON.parse(json);
-        
-        $.each(tempData, function(key, value) {
-            if (value.length > 0) {
-                // Fill in the login form
-                $('#iGenkikun' + key).val(value);
-            } else {
-                allInfoValid = false;
-            }
-        });
-
-        // Not enough info to login automatically.
-        // Stop animation without displaying any error
-        if (!allInfoValid) {
-            cs.stopLoginAnimation();
-            return;
+/*
+ * login and receive the server's tokan
+ */
+cs.loginGenki = function(tempData) {
+    var url = tempData.Url;
+    var id = tempData.Id;
+    var pw = tempData.Pw;
+    return $.ajax({
+        type: "POST",
+        //url: cs.accessData.target + '/GenkiKunService/getToken?targetUrl=' + url + 'newpersonium/Response&id=' + id + '&pass=' + pw,
+        url: cs.accessData.target + '/GenkiKunService/getToken',
+        data: {
+            'targetUrl': url + 'newpersonium/Response',
+            'id': id,
+            'pass': pw
+        },
+        headers: {
+            'Accept':'application/json',
+            'Authorization':'Bearer ' + cs.accessData.token
         }
-
-        cs.loginGenki().done(function(data) {
-            cs.transGenki(data);
-        }).fail(function(data) {
-            cs.stopLoginAnimation("login:msg.error.failedToLogin");
-        });
-    }).fail(function() {
-        // Stop animation without displaying any error
-        cs.stopLoginAnimation();
     });
+};
+
+cs.updateGenkikunFormData = function(key, value) {
+    var tempValue = value;
+    if (key == "Url") {
+        tempValue = cs.addEndingSlash(value);
+    }
+    $('#iGenkikun' + key).val(tempValue);
+    return tempValue;
+};
+
+cs.addEndingSlash = function(url) {
+    var tempValue = url;
+    if (url.slice(-1) != "/") {
+        tempValue += "/";
+    }
+
+    return tempValue;
 };
 
 cs.displayMessageByKey = function(msg_key) {
