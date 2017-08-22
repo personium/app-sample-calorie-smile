@@ -3,14 +3,16 @@
     "release": "Ungrant",
     "approve": "Approve",
     "decline": "Decline",
-    "reLogin": "Re-Login",
-    "expiredSession": "Expiration date of the session has expired.<br>Please login again.",
     "readRequestTitle": "$t(glossary:readRequestTarget)_Read Permission Request",
     "readRequestBody": "Please grant read permission for your $t(glossary:readRequestTarget).",
     "readResponseTitle": "$t(glossary:readRequestTarget)_Read Permission Reply",
     "readResponseApprovedBody": "Read permission is granted.",
     "readResponseDeclinedBody": "Read permission is not granted.",
     "me": "Me",
+    "sessionExpiredDialog": {
+        "title": "Re-Login",
+        "message": "Session has expired.<br>Please login again."
+    },
     "msg": {
         "info": {
             "collaboratingData": "Synchronizing data ...",

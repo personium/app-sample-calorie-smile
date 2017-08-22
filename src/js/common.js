@@ -43,7 +43,6 @@ function initJqueryI18next() {
 function updateContent() {
     // start localizing, details:
     // https://github.com/i18next/jquery-i18next#usage-of-selector-function
-    $('title').localize();
     $('[data-i18n]').localize();
 }
 
@@ -55,11 +54,11 @@ cs.appendSessionExpiredDialog = function() {
                 '<div class="modal-content">',
                     '<div class="modal-header login-header">',
                         '<h4 class="modal-title">',
-                            i18next.t("reLogin"),
+                            i18next.t("sessionExpiredDialog.title"),
                         '</h4>',
                     '</div>',
                     '<div class="modal-body">',
-                        i18next.t("expiredSession"),
+                        i18next.t("sessionExpiredDialog.message"),
                     '</div>',
                     '<div class="modal-footer">',
                         '<button type="button" class="btn btn-primary" id="b-session-relogin-ok" >OK</button>',
