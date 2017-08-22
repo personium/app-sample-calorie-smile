@@ -3,14 +3,16 @@
     "release": "解除",
     "approve": "承諾",
     "decline": "拒否",
-    "reLogin": "再ログイン",
-    "expiredSession": "セッションの期限が切れています。<br>ログインし直して下さい。",
     "readRequestTitle": "$t(glossary:readRequestTarget)_閲覧許可依頼",
     "readRequestBody": "$t(glossary:readRequestTarget)の閲覧許可をお願いします。",
     "readResponseTitle": "$t(glossary:readRequestTarget)_登録依頼返信",
     "readResponseApprovedBody": "承認しました。",
     "readResponseDeclinedBody": "拒否しました。",
     "me": "自分",
+    "sessionExpiredDialog": {
+        "title": "再ログイン",
+        "message": "セッションの期限が切れています。<br>ログインし直して下さい。"
+    },
     "msg": {
         "info": {
             "collaboratingData": "データ連携中です...",
