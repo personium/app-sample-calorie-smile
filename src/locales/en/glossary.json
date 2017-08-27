@@ -3,7 +3,7 @@
     "link": "Sync",
     "calorieSmileCollaboration": "Calorie Smile",
     "linkBtn": "$t(glossary:link) data",
-    "photosOfMeals": "Photos of Meals",
+    "photosOfMeals": "Food diary (photo)",
     "food": "food",
     "photosOfMealsOf": "{{title}}'s $t(glossary:photosOfMeals)",
     "readRequestTarget": "$t(glossary:photosOfMeals)",
