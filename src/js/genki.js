@@ -82,38 +82,8 @@ cs.additionalCallback = function() {
         }
     });
 
-    $("#extCellCalSmile").on('show.bs.collapse', function() {
-        $("#sendAllowedMessage").removeClass('in');
-        $("#sendAllowedMessage").attr("aria-expanded", false);
-        $("#listAllowed").removeClass('in');
-        $("#listAllowed").attr("aria-expanded", false);
-        $("#receiveMessage").removeClass('in');
-        $("#receiveMessage").attr("aria-expanded", false);
-    });
-    $("#sendAllowedMessage").on('show.bs.collapse', function() {
-        $("#extCellCalSmile").removeClass('in');
-        $("#extCellCalSmile").attr("aria-expanded", false);
-        $("#listAllowed").removeClass('in');
-        $("#listAllowed").attr("aria-expanded", false);
-        $("#receiveMessage").removeClass('in');
-        $("#receiveMessage").attr("aria-expanded", false);
+    $("#modal-sendAllowedMessage").on('show.bs.modal', function() {
         $("#popupSendAllowedErrorMsg").html('');
-    });
-    $("#listAllowed").on('show.bs.collapse', function() {
-        $("#sendAllowedMessage").removeClass('in');
-        $("#sendAllowedMessage").attr("aria-expanded", false);
-        $("#extCellCalSmile").removeClass('in');
-        $("#extCellCalSmile").attr("aria-expanded", false);
-        $("#receiveMessage").removeClass('in');
-        $("#receiveMessage").attr("aria-expanded", false);
-    });
-    $("#receiveMessage").on('show.bs.collapse', function() {
-        $("#sendAllowedMessage").removeClass('in');
-        $("#sendAllowedMessage").attr("aria-expanded", false);
-        $("#listAllowed").removeClass('in');
-        $("#listAllowed").attr("aria-expanded", false);
-        $("#extCellCalSmile").removeClass('in');
-        $("#extCellCalSmile").attr("aria-expanded", false);
     });
 
     $('#dvOverlay').on('click', function() {
