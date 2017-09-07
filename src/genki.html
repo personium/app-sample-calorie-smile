@@ -7,12 +7,14 @@
   <title data-i18n="glossary:title"></title>
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/twitter-bootstrap/3.3.7/css/bootstrap.min.css" />
   <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.2.1/jquery.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/underscore.js/1.8.3/underscore-min.js"></script>
   <script src="https://cdnjs.cloudflare.com/ajax/libs/i18next/8.4.3/i18next.min.js"></script>
   <script src="https://unpkg.com/i18next-xhr-backend/i18nextXHRBackend.js"></script>
   <script src="https://cdnjs.cloudflare.com/ajax/libs/i18next-browser-languagedetector/2.0.0/i18nextBrowserLanguageDetector.min.js"></script>
   <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery-i18next/1.2.0/jquery-i18next.min.js"></script>
   <script src="https://cdnjs.cloudflare.com/ajax/libs/twitter-bootstrap/3.3.7/js/bootstrap.min.js"></script>
   <script src="./js/common.js"></script>
+  <script src="./js/calorie_smile.js"></script>
   <script src="./js/common_personium.js"></script>
   <script src="./js/genki.js"></script>
   <link href='https://fonts.googleapis.com/css?family=Raleway:400,200' rel='stylesheet' type='text/css'>
@@ -34,7 +36,7 @@
       
   </span>
   <div class="slide-menu">
-    <h1 data-i18n="menu"></h1>
+    <h1 data-i18n="menu.title"></h1>
     <table class="menu-title">
       <tr>
         <td class="sidemenu-item"><h3>
@@ -53,7 +55,7 @@
       </tr>
       <tr>
         <td class="sidemenu-item"><h3>
-          <a onClick="cs.receiveMessage();" href="javascript:void(0)" class="allToggle" data-i18n="glossary:menu.notification.title"></a>
+          <a onClick="cs.receiveMessage();" href="javascript:void(0)" class="allToggle" data-i18n="menu.notification.title"></a>
         </h3></td>
       </tr>
       <tr>
@@ -74,7 +76,7 @@
         </div>
         <div class="modal-body">
           <select id="otherAllowedCells"></select>
-          <button id="bExtCalSmile" data-i18n="glossary:menu.lookAtOtherPhotos.btn"></button>
+          <button id="bReadAnotherCell" data-i18n="glossary:menu.lookAtOtherPhotos.btn"></button>
         </div>
         <div class="modal-footer">
           
@@ -124,7 +126,7 @@
       <div class="modal-content">
         <div class="modal-header">
           <button type="button" class="close" data-dismiss="modal">×</button>
-          <h4 class="modal-title" id="header-public" data-i18n="glossary:menu.notification.header"></h4>
+          <h4 class="modal-title" id="header-public" data-i18n="menu.notification.header"></h4>
         </div>
         <div class="modal-body">
           <div class="panel-group" id="messageList">

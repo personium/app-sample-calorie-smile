@@ -7,6 +7,23 @@
     "food": "food",
     "photosOfMealsOf": "{{title}}'s $t(glossary:photosOfMeals)",
     "readRequestTarget": "$t(glossary:photosOfMeals)",
+    "readRequestBodyTarget": "$t(glossary:photosOfMeals)",
+    "sessionExpiredDialog": {
+        "title": "Re-Login",
+        "action": "Please login again.",
+        "btnOk": "OK"
+    },
+    "irrecoverableErrorDialog": {
+        "title": "Terminating $(glossary:title) ..."
+    },
+    "dataSubject": {
+        "label": "cell"
+    },
+    "msg": {
+        "info": {
+            "collaboratingData": "Synchronizing data ..."
+        }
+    },
     "menu": {
         "lookAtOtherPhotos": {
             "title": "View another user's photos",
@@ -21,10 +38,6 @@
         "readPermissionStatus": {
             "title": "Viewed by",
             "header": "List of users which you have granted view permissions"
-        },
-        "notification": {
-            "title": "Notifications",
-            "header": "List of notifications"
         },
         "gotoCalorieSmile": {
             "title": "Access Calorie Smile's home page"

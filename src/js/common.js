@@ -14,25 +14,65 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
- 
+
 /*
  * The followings should be shared among applications and/or within the same application.
  */
-var cs = {};
+var Common = Common || {};
 
 //Default timeout limit - 60 minutes.
-cs.IDLE_TIMEOUT =  3600000;
+Common.IDLE_TIMEOUT =  3600000;
 // 55 minutes
-cs.IDLE_CHECK = 3300000;
+Common.IDLE_CHECK = 3300000;
 // Records last activity time.
-cs.lastActivity = new Date().getTime();
+Common.lastActivity = new Date().getTime();
 
-cs.accessData = {};
+Common.accessData = {
+    targetUrl: null,
+    cellUrl: null,
+    cellName: null,
+    appUrl: null,
+    token: null,
+    refToken: null,
+    expires: null,
+    refExpires: null
+};
+
+/*
+ * The followings should be shared among applications and/or within the same application.
+ */
+$(document).ready(function() {
+    i18next
+        .use(i18nextXHRBackend)
+        .use(i18nextBrowserLanguageDetector)
+        .init({
+            fallbackLng: 'en',
+            ns: getNamesapces(),
+            defaultNS: 'common',
+            debug: true,
+            backend: {
+                // load from i18next-gitbook repo
+                loadPath: './locales/{{lng}}/{{ns}}.json',
+                crossDomain: true
+            }
+        }, function(err, t) {
+            Common.initJqueryI18next();
+
+            Common.appendCommonDialog();
+            
+            // define your own additionalCallback for each App/screen
+            if ((typeof additionalCallback !== "undefined") && $.isFunction(additionalCallback)) {
+                additionalCallback();
+            }
+
+            Common.updateContent();
+        });
+});
 
 /*
  * Need to move to a function to avoid conflicting with the i18nextBrowserLanguageDetector initialization.
  */
-function initJqueryI18next() {
+Common.initJqueryI18next = function() {
     // for options see
     // https://github.com/i18next/jquery-i18next#initialize-the-plugin
     jqueryI18next.init(i18next, $, {
@@ -40,292 +80,339 @@ function initJqueryI18next() {
     });
 }
 
-function updateContent() {
+Common.setAppCellUrl = function() {
+    var appUrlSplit = _.first(location.href.split("#")).split("/");
+
+    if (_.contains(appUrlSplit, "localhost") || _.contains(appUrlSplit, "file:")) {
+        Common.accessData.appUrl = APP_URL; // APP_URL must be defined by each App
+    } else {
+        Common.accessData.appUrl = _.first(appUrlSplit, 4).join("/") + "/"; 
+    }
+
+    return;
+};
+
+Common.getAppCellUrl = function() {
+    return Common.accessData.appUrl;
+};
+
+Common.setAccessData = function() {
+    var hash = location.hash.substring(1);
+    var params = hash.split("&");
+    for (var i in params) {
+        var param = params[i].split("=");
+        var id = param[0];
+        switch (id) {
+        case "target":
+            Common.setTarget(param[1]);
+            break;
+        case "token":
+            Common.accessData.token = param[1];
+            break;
+        case "ref":
+            Common.accessData.refToken = param[1];
+            break;
+        case "expires":
+            Common.accessData.expires = param[1];
+            break;
+        case "refexpires":
+            Common.accessData.refExpires = param[1];
+            break;
+        case "fromCell":
+            Common.accessData.fromCell = param[1];
+            break;
+        }
+    }
+};
+
+Common.setTarget = function(url) {
+    Common.accessData.targetUrl = url;
+
+    var urlSplit = url.split("/");
+    Common.accessData.cellUrl = _.first(urlSplit, 4).join("/") + "/";
+    Common.accessData.cellName = Common.getCellNameFromUrl(Common.accessData.cellUrl);
+    Common.accessData.boxName = _.last(urlSplit);
+};
+
+// Data subject's cell URL
+Common.getTargetUrl = function() {
+    return Common.accessData.targetUrl;
+};
+
+Common.getCellUrl = function() {
+    return Common.accessData.cellUrl;
+};
+
+Common.getCellName = function() {
+    return Common.accessData.cellName;
+};
+
+Common.getBoxName = function() {
+    return Common.accessData.boxName;
+};
+
+Common.getToken = function() {
+    return Common.accessData.token;
+};
+
+Common.getRefressToken = function() {
+    return Common.accessData.refToken;
+};
+
+/*
+ * Retrieve cell name from cell URL
+ * Parameter:
+ *     1. ended with "/", "https://demo.personium.io/debug-user1/"
+ *     2. ended without "/", "https://demo.personium.io/debug-user1"
+ * Return:
+ *     debug-user1
+ */
+Common.getCellNameFromUrl = function(url) {
+    if ((typeof url === "undefined") || url == null || url == "") {
+        return "";
+    };
+
+    var cellName = _.last(_.compact(url.split("/")));
+    return cellName;
+};
+
+Common.notMe = function() {
+    if (typeof Common.accessData.fromCell !== "undefined") {
+        return (Common.accessData.cellName != Common.accessData.fromCell);
+    } else {
+        return false;
+    }
+}
+
+Common.updateContent = function() {
     // start localizing, details:
     // https://github.com/i18next/jquery-i18next#usage-of-selector-function
     $('[data-i18n]').localize();
 }
 
-cs.appendSessionExpiredDialog = function() {
-    // Session Expiration
-    var html = [
-        '<div id="modal-session-expired" class="modal fade" role="dialog" data-backdrop="static">',
-            '<div class="modal-dialog">',
-                '<div class="modal-content">',
-                    '<div class="modal-header login-header">',
-                        '<h4 class="modal-title">',
-                            i18next.t("sessionExpiredDialog.title"),
-                        '</h4>',
-                    '</div>',
-                    '<div class="modal-body">',
-                        i18next.t("sessionExpiredDialog.message"),
-                    '</div>',
-                    '<div class="modal-footer">',
-                        '<button type="button" class="btn btn-primary" id="b-session-relogin-ok" >OK</button>',
-                    '</div>',
-               '</div>',
-           '</div>',
-        '</div>'
-    ].join("");
-    var modal = $(html);
-    $(document.body).append(modal);
-    $('#b-session-relogin-ok').on('click', function() { cs.closeTab(); });
-};
-
-/*
- * clean up data and close tab
- */
-cs.closeTab = function() {
-  sessionStorage.setItem("accessInfo", null);
-  window.close();
-};
-
-cs.checkParam = function() {
+Common.checkParam = function() {
     var msg_key = "";
-    if (cs.accessData.target === null) {
+    if (Common.getTargetUrl() === null) {
         msg_key = "msg.error.targetCellNotSelected";
-    } else if (cs.accessData.token ===null) {
+    } else if (Common.accessData.token ===null) {
         msg_key = "msg.error.tokenMissing";
-    } else if (cs.accessData.refToken === null) {
+    } else if (Common.accessData.refToken === null) {
         msg_key = "msg.error.refreshTokenMissing";
-    } else if (cs.accessData.expires === null) {
+    } else if (Common.accessData.expires === null) {
         msg_key = "msg.error.tokenExpiryDateMissing";
-    } else if (cs.accessData.refExpires === null) {
+    } else if (Common.accessData.refExpires === null) {
         msg_key = "msg.error.refreshTokenExpiryDateMissing";
     }
 
     if (msg_key.length > 0) {
-        cs.displayMessageByKey(msg_key);
+        Common.irrecoverableErrorHandler(msg_key);
         return false;
     }
 
     return true;
 };
 
-cs.getName = function(path) {
-  var collectionName = path;
-  var recordsCount = 0;
-  if (collectionName != undefined) {
-          recordsCount = collectionName.length;
-          var lastIndex = collectionName.lastIndexOf("/");
-          if (recordsCount - lastIndex === 1) {
-                  collectionName = path.substring(0, recordsCount - 1);
-                  recordsCount = collectionName.length;
-                  lastIndex = collectionName.lastIndexOf("/");
-          }
-          collectionName = path.substring(lastIndex + 1, recordsCount);
-  }
-  return collectionName;
-};
-
 /*
  * Initialize info for idling check
  */
-cs.setIdleTime = function() {
-    cs.refreshToken();
+Common.setIdleTime = function() {
+    // Create Session Expired Modal
+    Common.appendSessionExpiredDialog();
+
+    Common.refreshToken();
 
     // check 5 minutes before session expires (60minutes)
-    cs.checkIdleTimer = setInterval(cs.checkIdleTime, cs.IDLE_CHECK);
+    Common.checkIdleTimer = setInterval(Common.checkIdleTime, Common.IDLE_CHECK);
 
     $(document).on('click mousemove keypress', function (event) {
-        cs.lastActivity = new Date().getTime();
+        Common.lastActivity = new Date().getTime();
     });
 }
 
-/*
- * idling check 
- * cs.lastActivity + cs.accessData.expires * 1000
- */
-cs.checkIdleTime = function() {
-    if (new Date().getTime() > cs.lastActivity + cs.IDLE_TIMEOUT) {
-        cs.stopIdleTimer();
-        $('#modal-session-expired').modal('show');
-    } else {
-        cs.refreshToken();
-    }
-};
-
-cs.stopIdleTimer = function() {
-    clearInterval(cs.checkIdleTimer);
-    $(document).off('click mousemove keypress');
-};
-
-cs.refreshToken = function() {
-    cs.getAppToken().done(function(appToken) {
-        cs.getAppCellToken(appToken.access_token).done(function(appCellToken) {
-            // update sessionStorage
-            cs.updateSessionStorage(appCellToken);
-        }).fail(function(appCellToken) {
-            cs.displayMessageByKey("msg.error.failedToRefreshToken");
-        });
-    }).fail(function(appToken) {
-        cs.displayMessageByKey("msg.error.failedToRefreshToken");
+Common.appendSessionExpiredDialog = function() {
+    // Session Expiration
+    var html = [
+        '<div id="modal-session-expired" class="modal fade" role="dialog" data-backdrop="static">',
+            '<div class="modal-dialog">',
+                '<div class="modal-content">',
+                    '<div class="modal-header login-header">',
+                        '<h4 class="modal-title" data-i18n="sessionExpiredDialog.title"></h4>',
+                    '</div>',
+                    '<div class="modal-body" data-i18n="[html]sessionExpiredDialog.message"></div>',
+                    '<div class="modal-footer">',
+                        '<button type="button" class="btn btn-primary" id="b-session-relogin-ok" data-i18n="sessionExpiredDialog.btnOk"></button>',
+                    '</div>',
+               '</div>',
+           '</div>',
+        '</div>'
+    ].join("");
+    $("body")
+        .append(html)
+        .localize();
+    $('#b-session-relogin-ok').on('click', function() { 
+        Common.closeTab();
     });
 };
 
-cs.getAppToken = function() {
-  return $.ajax({
+Common.appendCommonDialog = function() {
+    var html = [
+        '<div id="modal-common" class="modal fade" role="dialog" data-backdrop="static">',
+            '<div class="modal-dialog">',
+                '<div class="modal-content">',
+                    '<div class="modal-header login-header">',
+                        '<h4 class="modal-title"></h4>',
+                    '</div>',
+                    '<div class="modal-body"></div>',
+                    '<div class="modal-footer">',
+                        '<button type="button" class="btn btn-primary" id="b-common-ok" data-i18n="sessionExpiredDialog.btnOk"></button>',
+                    '</div>',
+               '</div>',
+           '</div>',
+        '</div>'
+    ].join("");
+    $("body").append(html);
+    $('#b-common-ok').on('click', function() { 
+        Common.closeTab();
+    });
+};
+
+Common.openCommonDialog = function(title_key, message_key) {
+    $("#modal-common .modal-title")
+        .attr('data-i18n', title_key);
+
+    $("#modal-common .modal-body")
+        .attr('data-i18n', '[html]' + message_key);
+
+    $("#modal-common")
+        .localize()
+        .modal('show');
+};
+
+/*
+ * clean up data and close tab/window
+ */
+Common.closeTab = function() {
+    // define your own cleanupData for each App/screen
+    if ((typeof cleanUpData !== "undefined") && $.isFunction(cleanUpData)) {
+        cleanUpData();
+    }
+
+    // close tab/window
+    window.close();
+};
+
+Common.refreshToken = function() {
+    /*
+     * Not enough information in Common.accessData to refresh token
+     * when opening another MyBoard.
+     * To be implemented.
+     */
+    if (Common.notMe()) {
+        return;
+    }
+    Common.getLaunchJson().done(function(launchObj){
+        Common.getAppToken(launchObj.personal).done(function(appToken) {
+            Common.getAppCellToken(appToken.access_token).done(function(appCellToken) {
+                // update sessionStorage
+                Common.updateSessionStorage(appCellToken);
+            }).fail(function(appCellToken) {
+                Common.irrecoverableErrorHandler("msg.error.failedToRefreshToken");
+            });
+        }).fail(function(appToken) {
+            Common.irrecoverableErrorHandler("msg.error.failedToRefreshToken");
+        });
+    }).fail(function(){
+        Common.irrecoverableErrorHandler("msg.error.failedToRefreshToken");
+    });
+};
+
+Common.getLaunchJson = function() {
+    return $.ajax({
+        type: "GET",
+        url: Common.getAppCellUrl() + "__/launch.json",
+        headers: {
+            'Authorization':'Bearer ' + Common.accessData.token,
+            'Accept':'application/json'
+        }
+    });
+}
+// This App's token
+Common.getAppToken = function(personalInfo) {
+    return $.ajax({
                 type: "POST",
-                url: 'https://demo.personium.io/hn-app-genki/__token',
+                url: Common.getAppCellUrl() + '__token',
                 processData: true,
                 dataType: 'json',
                 data: {
                         grant_type: "password",
-                        username: "megenki",
-                        password: "personiumgenki",
-                        p_target: cs.accessData.cellUrl
+                        username: personalInfo.appTokenId,
+                        password: personalInfo.appTokenPw,
+                        p_target: Common.getCellUrl()
                 },
                 headers: {'Accept':'application/json'}
          });
 };
 
-cs.getAppCellToken = function(appToken) {
+/*
+ * This App's refresh token
+ * client_id must be this App's cell URL
+ * Example: MyBoard is "https://demo.personium.io/app-myboard/"
+ *          Calorie Smile is "https://demo.personium.io/hn-app-genki/"
+ */
+Common.getAppCellToken = function(appToken) {
   return $.ajax({
                 type: "POST",
-                url: cs.accessData.cellUrl + '__token',
+                url: Common.getCellUrl() + '__token',
                 processData: true,
                 dataType: 'json',
                 data: {
                     grant_type: "refresh_token",
-                    refresh_token: cs.accessData.refToken,
-                    client_id: "https://demo.personium.io/hn-app-genki/",
+                    refresh_token: Common.accessData.refToken,
+                    client_id: Common.getAppCellUrl(),
                     client_secret: appToken
                 },
                 headers: {'Accept':'application/json'}
             });
 };
 
-cs.updateSessionStorage = function(appCellToken) {
-    cs.accessData.token = appCellToken.access_token;
-    cs.accessData.refToken = appCellToken.refresh_token;
-    cs.accessData.expires = appCellToken.expires_in;
-    cs.accessData.refExpires = appCellToken.refresh_token_expires_in;
-    sessionStorage.setItem("accessInfo", JSON.stringify(cs.accessData));
-};
-
-cs.updateSessionStorageGenkikun = function(json, loginData) {
-    cs.accessData.id = loginData.Id;
-    cs.accessData.genkiUrl = loginData.Url;
-    cs.accessData.genkiToken = json.access_token;
-    cs.accessData.genkiexpires = json.expires_in;
-    sessionStorage.setItem("accessInfo", JSON.stringify(cs.accessData));
-};
-
-cs.getCalorieSmileServerToken = function(startAnimation, stopAnimation, loginSucceedCallback) {
-    if ($.isFunction(startAnimation)) {
-        startAnimation();
-    }
-    cs.getGenkiAccessInfoAPI().done(function(json) {
-        if ($.isEmptyObject(json)) {
-            // Strange info
-            // Stop animation without displaying any error
-            if ($.isFunction(stopAnimation)) {
-                stopAnimation();
-            }
-            return;
-        };
-
-        var allInfoValid = true;
-        var tempData = JSON.parse(json);
-        
-        $.each(tempData, function(key, value) {
-            if (value.length > 0) {
-                // Fill in the login form
-                tempData[key] = cs.updateGenkikunFormData(key, value);
-            } else {
-                allInfoValid = false;
-            }
-        });
-
-        // Not enough info to login automatically.
-        // Stop animation without displaying any error
-        if (!allInfoValid) {
-            if ($.isFunction(stopAnimation)) {
-                stopAnimation();
-            }
-            return;
-        }
-
-        cs.loginGenki(tempData).done(function(data) {
-            if ($.isFunction(loginSucceedCallback)) {
-                loginSucceedCallback(data, tempData);
-            }
-        }).fail(function(data) {
-            if ($.isFunction(stopAnimation)) {
-                stopAnimation("login:msg.error.failedToLogin");
-            }
-        });
-    }).fail(function() {
-        // Stop animation without displaying any error
-        if ($.isFunction(stopAnimation)) {
-            stopAnimation();
-        }
-    });
+Common.updateSessionStorage = function(appCellToken) {
+    Common.accessData.token = appCellToken.access_token;
+    Common.accessData.refToken = appCellToken.refresh_token;
+    Common.accessData.expires = appCellToken.expires_in;
+    Common.accessData.refExpires = appCellToken.refresh_token_expires_in;
+    sessionStorage.setItem("Common.accessData", JSON.stringify(Common.accessData));
 };
 
 /*
- * Get login information (Url/Id/Pw) from user's cell
- * to avoid saving data in local storage.
- * Url: Calorie Smile server's URL
- * Id:  User ID
- * Pw:  User password
+ * idling check 
+ * Common.lastActivity + Common.accessData.expires * 1000
  */
-cs.getGenkiAccessInfoAPI = function() {
-    return $.ajax({
-        type: "GET",
-        url: cs.accessData.target + '/GenkiKunBox/genkiAccessInfo.json',
-        dataType: "text",
-        headers: {
-            'Authorization':'Bearer ' + cs.accessData.token,
-            'Accept':'application/text'
-        }
-    });
-};
-
-/*
- * login and receive the server's tokan
- */
-cs.loginGenki = function(tempData) {
-    var url = tempData.Url;
-    var id = tempData.Id;
-    var pw = tempData.Pw;
-    return $.ajax({
-        type: "POST",
-        //url: cs.accessData.target + '/GenkiKunService/getToken?targetUrl=' + url + 'newpersonium/Response&id=' + id + '&pass=' + pw,
-        url: cs.accessData.target + '/GenkiKunService/getToken',
-        data: {
-            'targetUrl': url + 'newpersonium/Response',
-            'id': id,
-            'pass': pw
-        },
-        headers: {
-            'Accept':'application/json',
-            'Authorization':'Bearer ' + cs.accessData.token
-        }
-    });
-};
-
-cs.updateGenkikunFormData = function(key, value) {
-    var tempValue = value;
-    if (key == "Url") {
-        tempValue = cs.addEndingSlash(value);
+Common.checkIdleTime = function() {
+    if (new Date().getTime() > Common.lastActivity + Common.IDLE_TIMEOUT) {
+        Common.stopIdleTimer();
+        $('#modal-session-expired').modal('show');
+    } else {
+        Common.refreshToken();
     }
-    $('#iGenkikun' + key).val(tempValue);
-    return tempValue;
 };
 
-cs.addEndingSlash = function(url) {
-    var tempValue = url;
-    if (url.slice(-1) != "/") {
-        tempValue += "/";
+Common.stopIdleTimer = function() {
+    clearInterval(Common.checkIdleTimer);
+    $(document).off('click mousemove keypress');
+};
+
+Common.irrecoverableErrorHandler = function(msg_key) {
+    // define your own handler for each App/screen
+    if ((typeof irrecoverableErrorHandler !== "undefined") && $.isFunction(irrecoverableErrorHandler)) {
+        irrecoverableErrorHandler();
     }
 
-    return tempValue;
+    Common.openCommonDialog("irrecoverableErrorDialog.title", msg_key);
 };
 
-cs.displayMessageByKey = function(msg_key) {
+Common.displayMessageByKey = function(msg_key) {
     if (msg_key) {
-        $('#dispMsg').attr("data-i18n", msg_key)
+        $('#dispMsg').attr("data-i18n", '[html]' + msg_key)
             .localize()
             .show();
     } else {

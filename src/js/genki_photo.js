@@ -14,38 +14,19 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-$(document).ready(function() {
-    cs.accessData = JSON.parse(sessionStorage.getItem("accessInfo"));
+additionalCallback = function() {
+    Common.accessData = JSON.parse(sessionStorage.getItem("Common.accessData"));
+    cs.accessData = JSON.parse(sessionStorage.getItem("cs.accessInfo"));
     cs.accessData.skip = 0;
     cs.accessData.top = 50;
-    
-    i18next
-    .use(i18nextXHRBackend)
-    .use(i18nextBrowserLanguageDetector)
-    .init({
-        fallbackLng: 'en',
-        ns: ['common', 'login', 'glossary'],
-        defaultNS: 'common',
-        debug: true,
-        backend: {
-            // load from i18next-gitbook repo
-            loadPath: './locales/{{lng}}/{{ns}}.json',
-            crossDomain: true
-        }
-    }, function(err, t) {
-        initJqueryI18next();
-        
-        cs.appendSessionExpiredDialog();
-        additionalCallback();
-        
-        updateContent();
-    });
-});
 
-function additionalCallback() {
-    cs.setIdleTime();
+    Common.setIdleTime();
     dispPhoto();
-    $('#photoTitle').attr("data-i18n-options", ["{ \"title\": \"", cs.accessData.Title, "\" }"].join(''));
+    $('#photoTitle')
+        .attr('data-i18n', 'glossary:photosOfMealsOf')
+        .localize({
+            title: cs.accessData.Title
+        });
 };
 
 function dispPhoto() {
@@ -105,10 +86,10 @@ function dispPhoto() {
         if (dataList.length > 0) {
             $('#dvMainArea').css("display", "block");
         } else {
-            cs.displayMessageByKey("msg.error.dataNotFound");
+            Common.displayMessageByKey("msg.error.dataNotFound");
         }
     }).fail(function(data) {
-        cs.displayMessageByKey("msg.error.dataNotFound");
+        Common.displayMessageByKey("msg.error.dataNotFound");
     });
 }
 

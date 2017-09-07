@@ -1,22 +1,36 @@
 {
-    "menu": "メニュー",
-    "release": "解除",
-    "approve": "承諾",
-    "decline": "拒否",
+    "me": "自分",
+    "menu": {
+        "title": "メニュー",
+        "notification": {
+            "title": "通知",
+            "header": "$t(menu.notification.title)一覧"
+        }
+    },
+    "navbar": {
+        "toggleNavigation": "Toggle navigation",
+        "appName": "$t(glossary:title)"
+    },
+    "sessionExpiredDialog": {
+        "title": "$t(glossary:sessionExpiredDialog.title)",
+        "message": "セッションの期限が切れています。<br>$t(glossary:sessionExpiredDialog.action)",
+        "btnOk": "$t(glossary:sessionExpiredDialog.btnOk)"
+    },
+    "irrecoverableErrorDialog": {
+        "title": "$t(glossary:irrecoverableErrorDialog.title)"
+    },
     "readRequestTitle": "$t(glossary:readRequestTarget)_閲覧許可依頼",
-    "readRequestBody": "$t(glossary:readRequestTarget)の閲覧許可をお願いします。",
+    "readRequestBody": "$t(glossary:readRequestBodyTarget)の閲覧許可をお願いします。",
     "readResponseTitle": "$t(glossary:readRequestTarget)_登録依頼返信",
     "readResponseApprovedBody": "承認しました。",
     "readResponseDeclinedBody": "拒否しました。",
-    "me": "自分",
-    "sessionExpiredDialog": {
-        "title": "再ログイン",
-        "message": "セッションの期限が切れています。<br>ログインし直して下さい。"
+    "error": {
+        "title": "エラー",
+        "label": "エラー"
     },
     "msg": {
         "info": {
-            "collaboratingData": "データ連携中です...",
-            "pleaseSelectTargetCell": "対象セルを選択して下さい。",
+            "pleaseSelectTargetCell": "対象$t(glossary:dataSubject.label)を選択して下さい。",
             "messageSent": "メッセージを送信しました。"
         },
         "error": {
@@ -30,5 +44,13 @@
             "dataNotFound": "データがありません。",
             "failedToRefreshToken": "リフレッシュトークンの更新に失敗しました。<br>画面をリロードしてください。"
         }
+    },
+    "btn": {
+        "cancel": "キャンセル",
+        "edit": "編集",
+        "save": "保存",
+        "release": "解除",
+        "approve": "承諾",
+        "decline": "拒否"
     }
 }

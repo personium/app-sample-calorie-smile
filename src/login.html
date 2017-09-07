@@ -7,12 +7,14 @@
   <title data-i18n="glossary:title"></title>
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/twitter-bootstrap/3.3.7/css/bootstrap.min.css" />
   <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.2.1/jquery.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/underscore.js/1.8.3/underscore-min.js"></script>
   <script src="https://cdnjs.cloudflare.com/ajax/libs/i18next/8.4.3/i18next.min.js"></script>
   <script src="https://unpkg.com/i18next-xhr-backend/i18nextXHRBackend.js"></script>
   <script src="https://cdnjs.cloudflare.com/ajax/libs/i18next-browser-languagedetector/2.0.0/i18nextBrowserLanguageDetector.min.js"></script>
   <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery-i18next/1.2.0/jquery-i18next.min.js"></script>
   <script src="https://cdnjs.cloudflare.com/ajax/libs/twitter-bootstrap/3.3.7/js/bootstrap.min.js"></script>
   <script src="./js/common.js"></script>
+  <script src="./js/calorie_smile.js"></script>
   <script src="./js/login.js"></script>
   <link href='https://fonts.googleapis.com/css?family=Raleway:400,200' rel='stylesheet' type='text/css'>
   <link href='./css/login.css' rel='stylesheet' type='text/css'>
@@ -23,18 +25,20 @@
 
     <div data-i18n="login:description"></div>
 
-    <div class="login-form-controls">
-      <div>
-        <input id="iGenkikunId" type="text" data-i18n="[placeholder]login:id" value="">
+    <form onSubmit="manualLogin();return false;">
+      <div class="login-form-controls">
+        <div>
+          <input id="iGenkikunId" type="text" data-i18n="[placeholder]login:id" value="">
+        </div>
+        <div>
+          <input id="iGenkikunPw" type="password" data-i18n="[placeholder]login:password" value="">
+        </div>
+        <div>
+          <button type="submit" class="login_btn round-btn" id="register" data-i18n="glossary:linkBtn"></button>
+        </div>
       </div>
-      <div>
-        <input id="iGenkikunPw" type="password" data-i18n="[placeholder]login:password" value="">
-      </div>
-      <div>
-        <button class="login_btn round-btn" id="register" onClick="manualLogin();return false;" data-i18n="glossary:linkBtn"></button>
-      </div>
-    </div>
-    <input id="iGenkikunUrl" type="hidden" value="https://pdsc.questcom.co.jp/"/>
+      <input id="iGenkikunUrl" type="hidden" value="https://pdsc.questcom.co.jp/"/>
+    </form>
     <!-- /login-form-controls -->
   </section>
   <section class="login-section">

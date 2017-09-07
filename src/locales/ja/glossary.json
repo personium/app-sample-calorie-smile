@@ -7,6 +7,23 @@
     "food": "食べ物",
     "photosOfMealsOf": "{{title}}の$t(glossary:photosOfMeals)",
     "readRequestTarget": "$t(glossary:photosOfMeals)",
+    "readRequestBodyTarget": "$t(glossary:photosOfMeals)",
+    "sessionExpiredDialog": {
+        "title": "再ログイン",
+        "action": ">ログインし直して下さい。",
+        "btnOk": "OK"
+    },
+    "irrecoverableErrorDialog": {
+        "title": "$(glossary:title)を終了します ..."
+    },
+    "dataSubject": {
+        "label": "セル"
+    },
+    "msg": {
+        "info": {
+            "collaboratingData": "データ連携中です..."
+        }
+    },
     "menu": {
         "lookAtOtherPhotos": {
             "title": "他の人の食事写真を見る",
@@ -21,10 +38,6 @@
         "readPermissionStatus": {
             "title": "閲覧許可状況",
             "header": "閲覧を許可しているユーザー"
-        },
-        "notification": {
-            "title": "通知",
-            "header": "$t(glossary:menu.notification.title)一覧"
         },
         "gotoCalorieSmile": {
             "title": "Calorie Smileへアクセス"

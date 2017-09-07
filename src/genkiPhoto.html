@@ -7,19 +7,21 @@
   <title data-i18n="glossary:title"></title>
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/twitter-bootstrap/3.3.7/css/bootstrap.min.css" />
   <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.2.1/jquery.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/underscore.js/1.8.3/underscore-min.js"></script>
   <script src="https://cdnjs.cloudflare.com/ajax/libs/i18next/8.4.3/i18next.min.js"></script>
   <script src="https://unpkg.com/i18next-xhr-backend/i18nextXHRBackend.js"></script>
   <script src="https://cdnjs.cloudflare.com/ajax/libs/i18next-browser-languagedetector/2.0.0/i18nextBrowserLanguageDetector.min.js"></script>
   <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery-i18next/1.2.0/jquery-i18next.min.js"></script>
   <script src="https://cdnjs.cloudflare.com/ajax/libs/twitter-bootstrap/3.3.7/js/bootstrap.min.js"></script>
   <script src="./js/common.js"></script>
+  <script src="./js/calorie_smile.js"></script>
   <script src="./js/genki_photo.js"></script>
   <link href='https://fonts.googleapis.com/css?family=Raleway:400,200' rel='stylesheet' type='text/css'>
   <link href='./css/genki.css' rel='stylesheet' type='text/css'>
 </head>
 <body>
   <header>
-    <h1><span id="photoTitle" data-i18n="glossary:photosOfMealsOf"></span></h1>
+    <h1><span id="photoTitle"></span></h1>
     <a id="updateGenki" href="#" onclick="dispPhoto();return false;">
       <img id="reloadIcon" src="./image/parts_ico_reload.png" alt="user">
     </a>
