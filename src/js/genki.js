@@ -59,7 +59,11 @@ additionalCallback = function() {
             var title = i18next.t("readRequestTitle");
             var body = i18next.t("readRequestBody");
             var reqRel = Common.getAppCellUrl() + "__relation/__/" + getAppReadRelation();
-            Common.sendMessageAPI(null, value, "req.relation.build", title, body, reqRel, Common.getCellUrl());
+            Common.sendMessageAPI(null, value, "req.relation.build", title, body, reqRel, Common.getCellUrl()).done(function(data){
+                $("#popupSendAllowedErrorMsg").html(i18next.t("msg.info.messageSent"));
+            }).fail(function(data) {
+                $("#popupSendAllowedErrorMsg").html(i18next.t("msg.error.failedToSendMessage"));
+            });
         }
     });
 
