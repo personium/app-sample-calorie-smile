@@ -14,7 +14,7 @@
         "btnOk": "OK"
     },
     "irrecoverableErrorDialog": {
-        "title": "Terminating $(glossary:title) ..."
+        "title": "Terminating $t(glossary:title) ..."
     },
     "dataSubject": {
         "label": "cell"
