@@ -34,7 +34,7 @@ getAppReadRelation = function() {
 };
 
 getAppDataPath = function() {
-    return '/GenkiKunData/shokuji_info?$top=1';
+    return 'GenkiKunData/shokuji_info?$top=1';
 };
 
 getAppRequestInfo = function() {
@@ -123,7 +123,7 @@ cs.getCalorieSmileServerToken = function(startAnimation, stopAnimation, loginSuc
 cs.getGenkiAccessInfoAPI = function() {
     return $.ajax({
         type: "GET",
-        url: Common.getTargetUrl() + '/GenkiKunBox/genkiAccessInfo.json',
+        url: Common.getBoxUrl() + 'GenkiKunBox/genkiAccessInfo.json',
         dataType: "text",
         headers: {
             'Authorization':'Bearer ' + Common.getToken(),
@@ -141,7 +141,7 @@ cs.loginGenki = function(tempData) {
     var pw = tempData.Pw;
     return $.ajax({
         type: "POST",
-        url: Common.getTargetUrl() + '/GenkiKunService/getToken',
+        url: Common.getBoxUrl() + 'GenkiKunService/getToken',
         data: {
             'targetUrl': url + 'newpersonium/Response',
             'id': id,

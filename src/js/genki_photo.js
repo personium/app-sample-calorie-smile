@@ -104,7 +104,7 @@ function setPhoto(dateId, timeId, noId, imageName) {
             contentType = "image/gif";
             break;
     }
-    var filePath = cs.accessData.photoCell + '/Images/' + imageName;
+    var filePath = cs.accessData.photoCell + 'Images/' + imageName;
     var oReq = new XMLHttpRequest();
     oReq.open("GET", filePath);
     oReq.responseType = "blob";
@@ -132,7 +132,7 @@ function getPhotoAPI(skip, top) {
     var id = cs.accessData.id;
     return $.ajax({
         type: 'GET',
-        url: cs.accessData.photoCell + '/GenkiKunData/shokuji_info?$skip=' + skip + '&$top=' + top + '&$orderby=shokuji_date%20desc,time%20asc,no%20asc',
+        url: cs.accessData.photoCell + 'GenkiKunData/shokuji_info?$skip=' + skip + '&$top=' + top + '&$orderby=shokuji_date%20desc,time%20asc,no%20asc',
         headers: {
             'Authorization':'Bearer ' + cs.accessData.photoToken,
             'Accept':'application/json'

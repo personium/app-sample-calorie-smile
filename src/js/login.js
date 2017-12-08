@@ -16,16 +16,6 @@
  */
 
 additionalCallback = function() {
-    Common.setAppCellUrl();
-    
-    Common.setAccessData();
-
-    if (!Common.checkParam()) {
-        // cannot do anything to recover
-        // display a dialog and close the app.
-        return;
-    };
-
     Common.setIdleTime();
     // try to login with genkiAccessInfo.json downloaded from the server
     automaticLogin();
@@ -55,7 +45,7 @@ manualLogin = function() {
     cs.loginGenki(tempData).done(function(data) {
         $.ajax({
             type: "PUT",
-            url: Common.getTargetUrl() + '/GenkiKunBox/genkiAccessInfo.json',
+            url: Common.getBoxUrl() + 'GenkiKunBox/genkiAccessInfo.json',
             data: JSON.stringify(tempData),
             dataType: 'json',
             headers: {
