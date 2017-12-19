@@ -5,13 +5,26 @@ function(request){
     var appCellUrl = [ rootUrl, appCellName ].join("/");
 
     var refererUrl = request["headers"]["referer"];
-    if (refererUrl.indexOf(appCellUrl) != 0) {
+    /*
+     * Usually only your App's URL is enough.
+     * However, if you can allow other Apps to call your function to get Authentication Token.
+     */
+    var refererUrlList = [appCellUrl];
+    var urlAllowed = false;
+    for (i = 0; i < refererUrlList.length; i++) {
+        if (!refererUrl && refererUrl.indexOf(refererUrlList[i]) == 0) {
+            urlAllowed = true;
+            break;
+        }
+    }
+    if (!urlAllowed) {
         return {
             status : 500,
             headers : {"Content-Type":"application/json"},
             body: [JSON.stringify({"code": "500", "message": "Cross-domain request not allowed."})]
         };
     }
+
 
     var bodyAsString = request["input"].readAll();
     if (bodyAsString === "") {
