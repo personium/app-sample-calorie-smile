@@ -25,7 +25,7 @@ cs.accessData = {};
 const APP_URL = "https://demo.personium.io/hn-app-genki/";
 
 getEngineEndPoint = function() {
-    return Common.getAppCellUrl() + "__/html-debug/Engine/getAppAuthToken";
+    return Common.getAppCellUrl() + "__/html/Engine/getAppAuthToken";
 };
 
 // Please add file names (with file extension) 
