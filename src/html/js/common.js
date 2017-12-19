@@ -397,6 +397,8 @@ Common.refreshToken = function(callback) {
             Common.irrecoverableErrorHandler("msg.error.failedToRefreshToken");
         });
     }).fail(function(appToken) {
+        console.log(error.responseJSON.code); 
+        console.log(error.responseJSON.message); 
         Common.irrecoverableErrorHandler("msg.error.failedToRefreshToken");
     });
 };
