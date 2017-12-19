@@ -386,50 +386,32 @@ Common.refreshToken = function(callback) {
     if (Common.notMe()) {
         return;
     }
-    Common.getLaunchJson().done(function(launchObj){
-        Common.getAppToken(launchObj.personal).done(function(appToken) {
-            Common.getAppCellToken(appToken.access_token).done(function(appCellToken) {
-                // update sessionStorage
-                Common.updateSessionStorage(appCellToken);
-                if ((typeof callback !== "undefined") && $.isFunction(callback)) {
-                    callback();
-                };
-            }).fail(function(appCellToken) {
-                Common.irrecoverableErrorHandler("msg.error.failedToRefreshToken");
-            });
-        }).fail(function(appToken) {
+    Common.getAppAuthToken(Common.getCellUrl()).done(function(appToken) {
+        Common.getAppCellToken(appToken.access_token).done(function(appCellToken) {
+            // update sessionStorage
+            Common.updateSessionStorage(appCellToken);
+            if ((typeof callback !== "undefined") && $.isFunction(callback)) {
+                callback();
+            };
+        }).fail(function(appCellToken) {
             Common.irrecoverableErrorHandler("msg.error.failedToRefreshToken");
         });
-    }).fail(function(){
+    }).fail(function(appToken) {
         Common.irrecoverableErrorHandler("msg.error.failedToRefreshToken");
     });
 };
 
-Common.getLaunchJson = function() {
+// Get App Authentication Token
+Common.getAppAuthToken = function(cellUrl) {
+    let engineEndPoint = getEngineEndPoint();
     return $.ajax({
-        type: "GET",
-        url: Common.getAppCellUrl() + "__/launch.json",
-        headers: {
-            'Authorization':'Bearer ' + Common.accessData.token,
-            'Accept':'application/json'
-        }
+        type: "POST",
+        url: engineEndPoint,
+        data: {
+                p_target: cellUrl
+        },
+        headers: {'Accept':'application/json'}
     });
-}
-// This App's token
-Common.getAppToken = function(personalInfo) {
-    return $.ajax({
-                type: "POST",
-                url: Common.getAppCellUrl() + '__token',
-                processData: true,
-                dataType: 'json',
-                data: {
-                        grant_type: "password",
-                        username: personalInfo.appTokenId,
-                        password: personalInfo.appTokenPw,
-                        p_target: Common.getCellUrl()
-                },
-                headers: {'Accept':'application/json'}
-         });
 };
 
 /*
