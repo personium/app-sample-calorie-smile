@@ -1,9 +1,7 @@
 {
   "personal": {
      "web": "https://demo.personium.io/hn-app-genki/__/html/login.html",
-     "android": "calorie-smile:",
-     "ios": "calorie-smile:",
-     "appTokenId": "tokenAcc",
-     "appTokenPw": "personiumtoken"
+     "android": "***:",
+     "ios": "***:"
   }
 }
