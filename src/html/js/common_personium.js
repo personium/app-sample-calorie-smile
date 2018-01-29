@@ -250,7 +250,7 @@ Common.appendRequestCells = function(extUrl, dispName) {
     $("#bSendAllowed").prop("disabled", false);
 };
 
-Common.sendMessageAPI = function(uuid, extCell, type, title, body, reqRel, reqRelTar) {
+Common.sendMessageAPI = function(uuid, extCell, type, title, body, reqType, reqRel, reqRelTar) {
     var data = {};
     data.BoxBound = true;
     data.InReplyTo = uuid;
@@ -260,11 +260,13 @@ Common.sendMessageAPI = function(uuid, extCell, type, title, body, reqRel, reqRe
     data.Title = title;
     data.Body = body;
     data.Priority = 3;
-    if (reqRel) {
-        data.RequestRelation = reqRel;
-    }
-    if (reqRelTar) {
-        data.RequestRelationTarget = reqRelTar;
+    if (reqType) {
+        data.RequestObjects = [];
+        let objArray = {};
+        objArray.RequestType = reqType;
+        objArray.Name = reqRel;
+        objArray.TargetUrl = reqRelTar;
+        data.RequestObjects.push(objArray);
     }
 
     return $.ajax({
