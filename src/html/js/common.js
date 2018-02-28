@@ -76,7 +76,7 @@ $(document).ready(function() {
             Common.refreshToken(function(){
                 Common.getBoxUrlAPI()
                     .done(function(data, textStatus, request) {
-                        let boxUrl = request.getResponseHeader("Location");
+                        let boxUrl = data.Url;
                         console.log(boxUrl);
                         Common.setInfo(boxUrl);
                         // define your own additionalCallback for each App/screen
@@ -184,8 +184,8 @@ Common.setInfo = function(url) {
     Common.accessData.unitUrl = _.first(urlSplit, 3).join("/") + "/";
     Common.accessData.cellUrl = _.first(urlSplit, 4).join("/") + "/";
     Common.accessData.cellName = Common.getCellNameFromUrl(Common.accessData.cellUrl);
-    Common.setBoxUrl(url + "/");
-    Common.accessData.boxName = _.last(urlSplit);
+    Common.setBoxUrl(url);
+    Common.accessData.boxName = _.last(_.compact(urlSplit));
 };
 
 Common.getUnitUrl = function() {
@@ -202,7 +202,7 @@ Common.changeLocalUnitToUnitUrl = function (cellUrl) {
 };
 
 Common.setCellUrl = function(url) {
-    Common.accessData.cellUrl = url;
+    Common.accessData.cellUrl = Common.preparePersoniumUrl(url);
 };
 
 Common.getCellUrl = function() {
@@ -214,7 +214,7 @@ Common.getCellName = function() {
 };
 
 Common.setBoxUrl = function(url) {
-    Common.accessData.boxUrl = url;
+    Common.accessData.boxUrl = Common.preparePersoniumUrl(url);
 };
 
 Common.getBoxUrl = function(url) {
@@ -232,6 +232,18 @@ Common.getToken = function() {
 Common.getRefressToken = function() {
     return Common.accessData.refToken;
 };
+
+// Make sure Unit/Cell/Box URL contains ending slash ('/')  
+Common.preparePersoniumUrl = function(url) {  
+    let tempUrl = url;  
+  
+    if (url.slice(-1) != '/') {  
+        tempUrl = url + '/';  
+    }  
+  
+    return tempUrl;  
+};
+
 
 /*
  * Retrieve cell name from cell URL
