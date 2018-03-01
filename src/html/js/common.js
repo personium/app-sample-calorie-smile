@@ -76,7 +76,12 @@ $(document).ready(function() {
             Common.refreshToken(function(){
                 Common.getBoxUrlAPI()
                     .done(function(data, textStatus, request) {
-                        let boxUrl = data.Url;
+                        let tempInfo = {
+                            data: data,
+                            request: request,
+                            targetCellUrl: Common.getCellUrl()
+                        };
+                        let boxUrl = Common.getBoxUrlFromResponse(tempInfo);
                         console.log(boxUrl);
                         Common.setInfo(boxUrl);
                         // define your own additionalCallback for each App/screen
@@ -108,6 +113,19 @@ $(document).ready(function() {
             Common.updateContent();
         });
 });
+
+/*
+ * Currently the REST API does not support CORS.
+ * Therefore, for CORS case, the default Box name is used.
+ */
+Common.getBoxUrlFromResponse = function(info) {
+    let urlFromHeader = info.request.getResponseHeader("Location");
+    let urlFromBody = info.data.Url;
+    let urlDefaultBox = info.targetCellUrl + APP_BOX_NAME;
+    let boxUrl = urlFromHeader || urlFromBody || urlDefaultBox;
+    
+    return boxUrl;
+};
 
 /*
  * Need to move to a function to avoid conflicting with the i18nextBrowserLanguageDetector initialization.
