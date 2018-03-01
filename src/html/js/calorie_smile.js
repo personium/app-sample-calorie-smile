@@ -23,6 +23,7 @@ var cs = {};
 cs.accessData = {};
 
 const APP_URL = "https://demo.personium.io/hn-app-genki/";
+const APP_BOX_NAME = 'io_personium_demo_hn-app-genki';
 
 getEngineEndPoint = function() {
     return Common.getAppCellUrl() + "__/html/Engine/getAppAuthToken";
