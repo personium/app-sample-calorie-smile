@@ -73,7 +73,7 @@ $(document).ready(function() {
                 return;
             };
 
-            Common.refreshToken(function(){
+            Common.startOAuth2(function(){
                 Common.getBoxUrlAPI()
                     .done(function(data, textStatus, request) {
                         let tempInfo = {
@@ -121,8 +121,7 @@ $(document).ready(function() {
 Common.getBoxUrlFromResponse = function(info) {
     let urlFromHeader = info.request.getResponseHeader("Location");
     let urlFromBody = info.data.Url;
-    let urlDefaultBox = info.targetCellUrl + APP_BOX_NAME;
-    let boxUrl = urlFromHeader || urlFromBody || urlDefaultBox;
+    let boxUrl = urlFromHeader || urlFromBody;
     
     return boxUrl;
 };
@@ -298,8 +297,6 @@ Common.checkParam = function() {
     var msg_key = "";
     if (Common.getCellUrl() === null) {
         msg_key = "msg.error.targetCellNotSelected";
-    } else if (Common.accessData.refToken === null) {
-        msg_key = "msg.error.refreshTokenMissing";
     }
 
     if (Common.notMe()) {
@@ -407,6 +404,32 @@ Common.closeTab = function() {
     window.close();
 };
 
+Common.startOAuth2 = function(callback) {
+    let endPoint = getStartOAuth2EngineEndPoint();
+    let cellUrl = Common.getCellUrl();
+    let params = $.param({
+        cellUrl: cellUrl
+    });
+    $.ajax({
+        type: "POST",
+        xhrFields: {
+            withCredentials: true
+        },
+        url: endPoint + "?" + params,
+        headers: {
+            'Accept':'application/json'
+        }
+    }).done(function(appCellToken) {
+        // update sessionStorage
+        Common.updateSessionStorage(appCellToken);
+        if ((typeof callback !== "undefined") && $.isFunction(callback)) {
+            callback();
+        };
+    }).fail(function(error) {
+        console.log(error.responseJSON);
+        Common.irrecoverableErrorHandler("msg.error.failedToRefreshToken");
+    });
+}
 Common.refreshToken = function(callback) {
     /*
      * Not enough information in Common.accessData to refresh token

@@ -29,6 +29,10 @@ getEngineEndPoint = function() {
     return Common.getAppCellUrl() + "__/html/Engine/getAppAuthToken";
 };
 
+getStartOAuth2EngineEndPoint = function() {
+    return Common.getAppCellUrl() + "__/html/Engine/start_oauth2";
+};
+
 // Please add file names (with file extension) 
 getNamesapces = function(){
     return ['common', 'glossary', 'login'];
