@@ -487,7 +487,10 @@ Common.getAppCellToken = function(appToken) {
                     client_id: Common.getAppCellUrl(),
                     client_secret: appToken
                 },
-                headers: {'Accept':'application/json'}
+                headers: {
+                    'Accept':'application/json',
+                    'content-type': 'application/x-www-form-urlencoded'
+                }
             });
 };
 
