@@ -6,7 +6,7 @@ exports.personium = (function() {
     var _ = require("underscore")._;
     var accInfo = require("acc_info").accInfo;
     var _appCellAdminInfo = accInfo.APP_CELL_ADMIN_INFO;
-    var _refererList = [accInfo.APP_CELL_URL];
+    var _refererList = [accInfo.APP_CELL_URL, "https://demo.personium.io/hn-ll-app/"];
 
     personium.getAppCellUrl = function() {
         return accInfo.APP_CELL_URL;
